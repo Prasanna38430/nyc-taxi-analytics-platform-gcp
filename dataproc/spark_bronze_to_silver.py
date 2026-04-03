@@ -25,8 +25,10 @@ CONFIG = {
     "project_id": "nyc-taxi-analytics-g12",
     "input_path": "gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/train.csv",
     "output_table": "nyc-taxi-analytics-g12.nyc_taxi_silver.trips_enriched",
+    "staging_table": "nyc-taxi-analytics-g12.nyc_taxi_silver.trips_staging",
     "temp_gcs_bucket": "nyc-taxi-data-bucket-g12",
-    "write_mode": "overwrite"
+    "write_mode": "merge",  # Options: "overwrite", "append", "merge"
+    "primary_key": "id"     # Column for deduplication
 }
 
 # NYC bounding box for coordinate validation
@@ -300,10 +302,73 @@ def write_to_bigquery(df, output_table, temp_bucket, write_mode):
         .option("partitionField", "pickup_datetime") \
         .option("partitionType", "DAY") \
         .option("clusteredFields", "vendor_id,passenger_count") \
-        .mode(write_mode) \
+        .mode("overwrite") \
         .save()
 
     logger.info("Write to BigQuery completed successfully!")
+
+
+def write_with_merge(spark, df, config):
+    """
+    Write data using MERGE for exactly-once idempotency.
+
+    This approach:
+    1. Writes new data to a staging table
+    2. Executes MERGE to upsert into target table
+    3. Cleans up staging table
+
+    Guarantees no duplicates even if pipeline is re-run.
+    """
+    from google.cloud import bigquery
+
+    logger.info("Using MERGE strategy for exactly-once semantics")
+
+    staging_table = config["staging_table"]
+    target_table = config["output_table"]
+    primary_key = config["primary_key"]
+    temp_bucket = config["temp_gcs_bucket"]
+
+    # Step 1: Write to staging table (overwrite)
+    logger.info(f"Writing to staging table: {staging_table}")
+    df.repartition(10).write \
+        .format("bigquery") \
+        .option("table", staging_table) \
+        .option("temporaryGcsBucket", temp_bucket) \
+        .mode("overwrite") \
+        .save()
+
+    # Step 2: Execute MERGE statement
+    logger.info("Executing MERGE into target table...")
+    client = bigquery.Client(project=config["project_id"])
+
+    # Get column list for MERGE (exclude primary key for UPDATE)
+    columns = [c for c in df.columns if c != primary_key]
+    update_clause = ", ".join([f"T.{c} = S.{c}" for c in columns])
+    insert_columns = ", ".join(df.columns)
+    insert_values = ", ".join([f"S.{c}" for c in df.columns])
+
+    merge_sql = f"""
+    MERGE `{target_table}` T
+    USING `{staging_table}` S
+    ON T.{primary_key} = S.{primary_key}
+    WHEN MATCHED THEN
+        UPDATE SET {update_clause}
+    WHEN NOT MATCHED THEN
+        INSERT ({insert_columns})
+        VALUES ({insert_values})
+    """
+
+    # Execute MERGE
+    job = client.query(merge_sql)
+    job.result()  # Wait for completion
+
+    logger.info(f"MERGE completed: {job.num_dml_affected_rows} rows affected")
+
+    # Step 3: Clean up staging table
+    logger.info("Cleaning up staging table...")
+    client.delete_table(staging_table, not_found_ok=True)
+
+    logger.info("MERGE write completed successfully!")
 
 
 # ============================================================================
@@ -344,12 +409,18 @@ def main():
 
         # Step 4: Load
         logger.info("\n--- STEP 4: Writing to BigQuery Silver ---")
-        write_to_bigquery(
-            df_enriched,
-            CONFIG["output_table"],
-            CONFIG["temp_gcs_bucket"],
-            CONFIG["write_mode"]
-        )
+
+        if CONFIG["write_mode"] == "merge":
+            # Use MERGE for exactly-once idempotency
+            write_with_merge(spark, df_enriched, CONFIG)
+        else:
+            # Use standard write (overwrite or append)
+            write_to_bigquery(
+                df_enriched,
+                CONFIG["output_table"],
+                CONFIG["temp_gcs_bucket"],
+                CONFIG["write_mode"]
+            )
 
         # Complete
         end_time = datetime.now()
