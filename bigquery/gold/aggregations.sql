@@ -1,14 +1,8 @@
--- ============================================================
--- Phase 5: Gold Layer - Aggregated Tables
--- ============================================================
+-- Gold Layer - Aggregated Tables
 -- Pre-computed aggregations for common analytical queries.
--- These tables improve dashboard performance and reduce costs.
--- ============================================================
+-- Improves dashboard performance and reduces costs.
 
-
--- ============================================================
 -- 1. Daily Summary Aggregation
--- ============================================================
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.agg_daily_summary` AS
 SELECT
     DATE(pickup_datetime) AS trip_date,
@@ -24,10 +18,7 @@ FROM `nyc-taxi-analytics-g12.nyc_taxi_silver.trips_enriched`
 GROUP BY trip_date
 ORDER BY trip_date;
 
-
--- ============================================================
 -- 2. Hourly Patterns Aggregation
--- ============================================================
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.agg_hourly_patterns` AS
 SELECT
     pickup_hour AS hour,
@@ -52,10 +43,7 @@ ORDER BY
     END,
     pickup_hour;
 
-
--- ============================================================
 -- 3. Vendor Performance Aggregation
--- ============================================================
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.agg_vendor_performance` AS
 SELECT
     v.vendor_name,
@@ -70,10 +58,7 @@ JOIN `nyc-taxi-analytics-g12.nyc_taxi_gold.dim_vendor` v
     ON f.vendor_key = v.vendor_key
 GROUP BY v.vendor_name;
 
-
--- ============================================================
 -- 4. Location Hotspots Aggregation
--- ============================================================
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.agg_location_hotspots` AS
 SELECT
     l.approximate_borough,
@@ -89,10 +74,7 @@ JOIN `nyc-taxi-analytics-g12.nyc_taxi_gold.dim_location` l
 GROUP BY l.approximate_borough, l.grid_id, l.lat_grid, l.lon_grid
 ORDER BY pickup_count DESC;
 
-
--- ============================================================
 -- Add Table Descriptions
--- ============================================================
 ALTER TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.agg_daily_summary`
 SET OPTIONS (description = 'Daily aggregated trip statistics');
 
