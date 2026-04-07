@@ -1,9 +1,6 @@
--- ============================================================
--- Phase 4: BigQuery Silver Layer Schema
--- ============================================================
--- The Silver layer is populated by the Spark ETL job.
--- This file documents the expected schema after processing.
--- ============================================================
+-- BigQuery Silver Layer Schema
+-- Silver layer stores cleaned, validated, and enriched data.
+-- Table structure documentation for trips_enriched.
 
 -- Create Silver dataset
 CREATE SCHEMA IF NOT EXISTS `nyc-taxi-analytics-g12.nyc_taxi_silver`
@@ -12,11 +9,8 @@ OPTIONS (
     location = 'us-central1'
 );
 
--- ============================================================
 -- Silver Table Schema (Created by Spark ETL)
--- ============================================================
 -- Table: nyc_taxi_silver.trips_enriched
---
 -- Original Columns:
 --   id                    STRING      Trip identifier
 --   vendor_id             INTEGER     Vendor code

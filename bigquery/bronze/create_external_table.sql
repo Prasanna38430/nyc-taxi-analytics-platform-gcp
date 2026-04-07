@@ -1,9 +1,6 @@
--- ============================================================
--- Phase 3: BigQuery Bronze Layer - External Table
--- ============================================================
--- Creates an external table pointing to raw CSV in GCS.
--- This is the "schema-on-read" approach for the Bronze layer.
--- ============================================================
+-- BigQuery Bronze Layer - External Table
+-- Creates an external table pointing to raw CSV data in GCS.
+-- Schema-on-read approach for the Bronze layer.
 
 -- Create Bronze dataset if not exists
 CREATE SCHEMA IF NOT EXISTS `nyc-taxi-analytics-g12.nyc_taxi_bronze`
