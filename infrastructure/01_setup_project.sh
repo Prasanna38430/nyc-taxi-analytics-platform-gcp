@@ -1,31 +1,20 @@
 #!/bin/bash
-# ============================================================
-# Phase 1: GCP Project Setup & Configuration
-# ============================================================
-# This script initializes the GCP project with all required
-# APIs, service accounts, and network configurations.
-# ============================================================
+# GCP Project Setup and Configuration
+# Initializes the project with required APIs, service accounts, and network configuration.
 
 set -e
 
-# ============================================================
-# CONFIGURATION - Modify these values for your project
-# ============================================================
+# Configuration
 PROJECT_ID="nyc-taxi-analytics-g12"
 REGION="us-central1"
 ZONE="us-central1-a"
 SA_NAME="nyc-taxi-pipeline-sa"
 
-echo "============================================================"
-echo "Phase 1: GCP Project Setup"
-echo "============================================================"
+echo "Starting GCP Project Setup"
 echo "Project ID: $PROJECT_ID"
 echo "Region: $REGION"
-echo "============================================================"
 
-# ============================================================
-# STEP 1: Set Project Configuration
-# ============================================================
+# Step 1: Set Project Configuration
 echo ""
 echo "[Step 1/4] Setting GCP project configuration..."
 gcloud config set project $PROJECT_ID
@@ -33,9 +22,7 @@ gcloud config set compute/region $REGION
 gcloud config set compute/zone $ZONE
 echo "✓ Project configuration set"
 
-# ============================================================
-# STEP 2: Enable Required APIs
-# ============================================================
+# Step 2: Enable Required APIs
 echo ""
 echo "[Step 2/4] Enabling required APIs..."
 
@@ -58,9 +45,7 @@ for api in "${APIS[@]}"; do
 done
 echo "✓ All APIs enabled"
 
-# ============================================================
-# STEP 3: Create Service Account with Required Roles
-# ============================================================
+# Step 3: Create Service Account with Required Roles
 echo ""
 echo "[Step 3/4] Creating service account..."
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
@@ -94,9 +79,7 @@ for role in "${ROLES[@]}"; do
 done
 echo "✓ Service account configured"
 
-# ============================================================
-# STEP 4: Configure Network for Dataproc
-# ============================================================
+# Step 4: Configure Network for Dataproc
 echo ""
 echo "[Step 4/4] Configuring network..."
 

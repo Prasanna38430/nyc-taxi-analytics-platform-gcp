@@ -1,30 +1,19 @@
 #!/bin/bash
-# ============================================================
-# Phase 2: Cloud Storage Data Lake Setup
-# ============================================================
-# Creates the GCS bucket with proper folder structure
-# following data lake best practices.
-# ============================================================
+# Cloud Storage Data Lake Setup
+# Creates the GCS bucket with proper folder structure following data lake best practices.
 
 set -e
 
-# ============================================================
-# CONFIGURATION
-# ============================================================
+# Configuration
 PROJECT_ID="nyc-taxi-analytics-g12"
 BUCKET_NAME="nyc-taxi-data-bucket-g12"
 REGION="us-central1"
 
-echo "============================================================"
-echo "Phase 2: Cloud Storage Data Lake Setup"
-echo "============================================================"
+echo "Starting Cloud Storage Data Lake Setup"
 echo "Bucket: gs://$BUCKET_NAME/"
 echo "Region: $REGION"
-echo "============================================================"
 
-# ============================================================
-# STEP 1: Create Bucket
-# ============================================================
+# Step 1: Create Bucket
 echo ""
 echo "[Step 1/4] Creating Cloud Storage bucket..."
 
@@ -36,9 +25,7 @@ else
 fi
 echo "✓ Bucket ready"
 
-# ============================================================
-# STEP 2: Create Folder Structure
-# ============================================================
+# Step 2: Create Folder Structure
 echo ""
 echo "[Step 2/4] Creating folder structure..."
 
@@ -60,9 +47,7 @@ for folder in "${FOLDERS[@]}"; do
 done
 echo "✓ Folder structure created"
 
-# ============================================================
-# STEP 3: Set Lifecycle Policy (Cost Optimization)
-# ============================================================
+# Step 3: Set Lifecycle Policy (Cost Optimization)
 echo ""
 echo "[Step 3/4] Setting lifecycle policy..."
 
@@ -93,9 +78,7 @@ gsutil lifecycle set /tmp/lifecycle.json gs://$BUCKET_NAME/
 rm /tmp/lifecycle.json
 echo "✓ Lifecycle policy set"
 
-# ============================================================
-# STEP 4: Set Bucket Labels (Organization)
-# ============================================================
+# Step 4: Set Bucket Labels (Organization)
 echo ""
 echo "[Step 4/4] Setting bucket labels..."
 
