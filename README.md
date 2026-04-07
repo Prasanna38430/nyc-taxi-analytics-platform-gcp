@@ -22,8 +22,8 @@ An end-to-end data engineering pipeline built on **Google Cloud Platform**, impl
 │         │                                       │                    │           │
 │         │                                       ▼                    ▼           │
 │         │                              ┌──────────────┐     ┌──────────────┐    │
-│         │                              │  Vertex AI   │     │   Looker     │    │
-│         │                              │  ML Model    │     │   Studio     │    │
+│         │                              │ BigQuery ML  │     │   Looker     │    │
+│         │                              │  (Linear Reg)│     │   Studio     │    │
 │         │                              └──────────────┘     └──────────────┘    │
 │         │                                                                        │
 │         └────────────────────┬───────────────────────────────────────────────┐  │
@@ -86,7 +86,7 @@ An end-to-end data engineering pipeline built on **Google Cloud Platform**, impl
 | **Data Warehouse** | BigQuery | Silver & Gold layers, analytics |
 | **ETL Processing** | Dataproc (Spark) | Data transformation & enrichment |
 | **Orchestration** | Cloud Composer | Workflow scheduling & automation |
-| **ML Platform** | Vertex AI | Trip duration prediction model |
+| **ML Platform** | BigQuery ML | Trip duration prediction (Linear Regression) |
 | **Visualization** | Looker Studio | Business intelligence dashboards |
 | **IaC** | Terraform | Infrastructure provisioning |
 | **Monitoring** | Cloud Monitoring | Observability & alerting |
@@ -119,9 +119,10 @@ nyc-taxi-analytics-platform-gcp/
 ├── airflow/                     # Phase 6: Orchestration
 │   └── dags/
 │       └── nyc_taxi_pipeline_dag.py
-├── vertex_ai/                   # Phase 7: ML Pipeline
-│   ├── training/
-│   └── prediction/
+├── bigquery/                    # Phase 7: ML Pipeline (BigQuery ML)
+│   └── ml/
+│       ├── trip_duration_model.sql
+│       └── phase_7_trip_duration_model.md
 ├── monitoring/                  # Phase 10: Alerting
 │   └── alert_policies.yaml
 ├── docs/                        # Documentation
@@ -180,7 +181,7 @@ gsutil cp data/train.csv gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/
 - **Feature Engineering**: 15+ derived features for ML
 - **Star Schema Design**: Optimized for analytical queries
 - **Partitioning & Clustering**: Cost-optimized BigQuery tables
-- **ML Pipeline**: Trip duration prediction with Vertex AI
+- **ML Pipeline**: Trip duration prediction with BigQuery ML (Linear Regression)
 - **Automated Orchestration**: Airflow DAGs for scheduling
 - **Infrastructure as Code**: Reproducible deployments with Terraform
 - **Monitoring & Alerting**: Proactive issue detection

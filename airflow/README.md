@@ -58,7 +58,7 @@ prepare_ml_features (BigQuery)
 check_data_quality
     │
     ▼
-train_model (Vertex AI)
+train_model (BigQuery ML)
     │
     ▼
 check_model_improvement
