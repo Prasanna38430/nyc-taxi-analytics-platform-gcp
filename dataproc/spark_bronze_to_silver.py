@@ -1,10 +1,7 @@
 """
-NYC Taxi Trip Data - Bronze to Silver ETL Pipeline
-===================================================
-PySpark ETL job for processing raw taxi trip data from GCS
-and loading enriched data into BigQuery.
+Bronze to Silver ETL Pipeline for NYC Taxi Trip Data using PySpark.
 
-Author: Group 12
+Processes raw taxi trip data from GCS and loads enriched data into BigQuery.
 Version: 1.0
 """
 
@@ -17,9 +14,7 @@ import logging
 import sys
 from datetime import datetime
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# Configuration
 
 CONFIG = {
     "project_id": "nyc-taxi-analytics-g12",
@@ -39,9 +34,7 @@ NYC_BOUNDS = {
     "lon_max": -73.7
 }
 
-# ============================================================================
-# LOGGING SETUP
-# ============================================================================
+# Logging Setup
 
 logging.basicConfig(
     level=logging.INFO,
@@ -49,9 +42,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ============================================================================
-# SCHEMA DEFINITION
-# ============================================================================
+# Schema Definition
 
 RAW_SCHEMA = StructType([
     StructField("id", StringType(), True),
@@ -68,9 +59,7 @@ RAW_SCHEMA = StructType([
 ])
 
 
-# ============================================================================
-# SPARK SESSION
-# ============================================================================
+# Spark Session
 
 def create_spark_session():
     """
@@ -93,9 +82,7 @@ def create_spark_session():
     return spark
 
 
-# ============================================================================
-# DATA READING
-# ============================================================================
+# Data Reading
 
 def read_bronze_data(spark, input_path):
     """
@@ -117,9 +104,7 @@ def read_bronze_data(spark, input_path):
     return df
 
 
-# ============================================================================
-# DATA QUALITY
-# ============================================================================
+# Data Quality
 
 def log_data_quality_metrics(df, stage_name):
     """
@@ -185,9 +170,7 @@ def validate_data(df):
     return df_valid
 
 
-# ============================================================================
-# FEATURE ENGINEERING
-# ============================================================================
+# Feature Engineering
 
 def add_features(df):
     """
@@ -279,9 +262,7 @@ def add_features(df):
     return df
 
 
-# ============================================================================
-# DATA WRITING
-# ============================================================================
+# Data Writing
 
 def write_to_bigquery(df, output_table, temp_bucket, write_mode):
     """
@@ -371,9 +352,7 @@ def write_with_merge(spark, df, config):
     logger.info("MERGE write completed successfully!")
 
 
-# ============================================================================
-# MAIN PIPELINE
-# ============================================================================
+# Main Pipeline
 
 def main():
     """
@@ -383,9 +362,7 @@ def main():
     comprehensive logging for observability.
     """
     start_time = datetime.now()
-    logger.info("=" * 60)
-    logger.info("NYC TAXI - BRONZE TO SILVER ETL PIPELINE")
-    logger.info("=" * 60)
+    logger.info("Starting NYC Taxi Bronze to Silver ETL Pipeline")
     logger.info(f"Start time: {start_time}")
 
     try:
@@ -393,7 +370,7 @@ def main():
         spark = create_spark_session()
 
         # Step 1: Ingest
-        logger.info("\n--- STEP 1: Reading Bronze Data ---")
+        logger.info("Reading Bronze Data")
         df_bronze = read_bronze_data(spark, CONFIG["input_path"])
         log_data_quality_metrics(df_bronze, "Bronze (Raw)")
 
@@ -426,11 +403,9 @@ def main():
         end_time = datetime.now()
         duration = end_time - start_time
 
-        logger.info("\n" + "=" * 60)
-        logger.info("PIPELINE COMPLETED SUCCESSFULLY!")
+        logger.info("Pipeline execution completed successfully!")
         logger.info(f"End time: {end_time}")
         logger.info(f"Total duration: {duration}")
-        logger.info("=" * 60)
 
         spark.stop()
         return 0
@@ -441,9 +416,7 @@ def main():
         return 1
 
 
-# ============================================================================
-# ENTRY POINT
-# ============================================================================
+# Entry Point
 
 if __name__ == "__main__":
     sys.exit(main())
