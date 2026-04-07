@@ -1,9 +1,6 @@
--- ============================================================
--- Phase 5: Gold Layer - dim_datetime (Time Dimension)
--- ============================================================
--- Creates the datetime dimension table for the star schema.
+-- Gold Layer - dim_datetime (Time Dimension Table)
+-- Creates the datetime dimension for the star schema.
 -- Contains all time-related attributes for analytical queries.
--- ============================================================
 
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.dim_datetime` AS
 SELECT DISTINCT
