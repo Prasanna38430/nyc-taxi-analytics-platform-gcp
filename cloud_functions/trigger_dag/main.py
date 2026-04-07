@@ -1,11 +1,8 @@
 """
-Cloud Function: Trigger Airflow DAG on GCS Upload
-==================================================
-This function is triggered when a file is uploaded to the
-raw/taxi_trips/ folder in GCS. It then triggers the
-Airflow DAG in Cloud Composer.
+Cloud Function to trigger Airflow DAG when files are uploaded to GCS.
 
-Author: Group 12
+When a file is uploaded to the raw/taxi_trips/ folder in GCS,
+this function triggers the Airflow DAG in Cloud Composer.
 """
 
 import google.auth
