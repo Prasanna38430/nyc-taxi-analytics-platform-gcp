@@ -1,17 +1,9 @@
 """
-NYC Taxi Analytics - Daily ETL Pipeline DAG
-============================================
+Daily ETL Pipeline DAG for NYC Taxi Analytics.
+
 Orchestrates the complete data pipeline from Bronze to Gold layer.
-
-This DAG:
-1. Creates an ephemeral Dataproc cluster (cost optimization)
-2. Runs the Spark ETL job (Bronze → Silver)
-3. Deletes the cluster after job completion
-4. Refreshes BigQuery Gold layer aggregations
-5. Sends notification on completion/failure
-
-Schedule: Daily at 2:00 AM UTC
-Author: Group 12
+This DAG creates an ephemeral Dataproc cluster, runs ETL transformations,
+refreshes aggregations, and cleans up resources. Runs daily at 2:00 AM UTC.
 """
 
 from datetime import datetime, timedelta
@@ -30,9 +22,7 @@ from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
 
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# Configuration
 
 PROJECT_ID = "nyc-taxi-analytics-g12"
 REGION = "us-central1"
@@ -90,9 +80,7 @@ DEFAULT_ARGS = {
 }
 
 
-# ============================================================================
-# SQL QUERIES FOR GOLD LAYER REFRESH
-# ============================================================================
+# SQL Queries for Gold Layer Refresh
 
 REFRESH_DAILY_SUMMARY_SQL = """
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.agg_daily_summary` AS
@@ -143,9 +131,7 @@ GROUP BY v.vendor_name
 """
 
 
-# ============================================================================
-# CALLBACK FUNCTIONS
-# ============================================================================
+# Callback Functions
 
 def on_success_callback(context):
     """Log success message - can be extended to send Slack/Teams notification."""
@@ -162,9 +148,7 @@ def on_failure_callback(context):
     print(f"DAG {dag_id} failed at task {task_id} for {execution_date}")
 
 
-# ============================================================================
-# DAG DEFINITION
-# ============================================================================
+# DAG Definition
 
 with DAG(
     dag_id="nyc_taxi_daily_etl_pipeline",
@@ -179,16 +163,12 @@ with DAG(
     on_failure_callback=on_failure_callback,
 ) as dag:
 
-    # ========================================================================
-    # TASK: Start Pipeline
-    # ========================================================================
+    # Start Pipeline
     start = DummyOperator(
         task_id="start_pipeline",
     )
 
-    # ========================================================================
-    # TASK: Check if Source Data Exists
-    # ========================================================================
+    # Check if Source Data Exists
     check_source_data = GCSObjectExistenceSensor(
         task_id="check_source_data_exists",
         bucket=BUCKET_NAME,
@@ -197,9 +177,7 @@ with DAG(
         poke_interval=30,
     )
 
-    # ========================================================================
-    # TASK: Create Dataproc Cluster
-    # ========================================================================
+    # Create Dataproc Cluster
     create_cluster = DataprocCreateClusterOperator(
         task_id="create_dataproc_cluster",
         project_id=PROJECT_ID,
@@ -208,9 +186,7 @@ with DAG(
         cluster_config=CLUSTER_CONFIG,
     )
 
-    # ========================================================================
-    # TASK: Run Spark ETL Job
-    # ========================================================================
+    # Run Spark ETL Job
     run_spark_etl = DataprocSubmitJobOperator(
         task_id="run_spark_bronze_to_silver",
         project_id=PROJECT_ID,
@@ -218,9 +194,7 @@ with DAG(
         job=SPARK_JOB,
     )
 
-    # ========================================================================
-    # TASK: Delete Dataproc Cluster (runs even if ETL fails)
-    # ========================================================================
+    # Delete Dataproc Cluster (cleanup always runs)
     delete_cluster = DataprocDeleteClusterOperator(
         task_id="delete_dataproc_cluster",
         project_id=PROJECT_ID,
@@ -229,9 +203,7 @@ with DAG(
         trigger_rule=TriggerRule.ALL_DONE,  # Always run (cleanup)
     )
 
-    # ========================================================================
-    # TASK: Refresh Gold Layer Aggregations
-    # ========================================================================
+    # Refresh Gold Layer Aggregations
     refresh_daily_summary = BigQueryInsertJobOperator(
         task_id="refresh_daily_summary",
         configuration={
@@ -265,17 +237,13 @@ with DAG(
         location="us-central1",
     )
 
-    # ========================================================================
-    # TASK: End Pipeline
-    # ========================================================================
+    # End Pipeline
     end = DummyOperator(
         task_id="end_pipeline",
         trigger_rule=TriggerRule.ALL_SUCCESS,
     )
 
-    # ========================================================================
-    # TASK DEPENDENCIES
-    # ========================================================================
+    # Task Dependencies
     # fmt: off
     (
         start
