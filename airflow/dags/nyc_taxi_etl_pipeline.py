@@ -1,18 +1,9 @@
 """
-NYC Taxi Analytics - Event-Triggered ETL Pipeline
-==================================================
+Event-Triggered ETL Pipeline DAG for NYC Taxi Analytics.
+
 Triggered automatically when new data is uploaded to GCS.
 Can also be triggered manually for testing.
-
-This DAG:
-1. Validates the uploaded file
-2. Creates an ephemeral Dataproc cluster
-3. Runs Bronze → Silver ETL
-4. Refreshes Gold layer aggregations
-5. Triggers ML feature preparation
-6. Cleans up resources
-
-Author: Group 12
+Runs Bronze to Silver ETL, refreshes aggregations, and prepares ML features.
 """
 
 from datetime import datetime, timedelta
@@ -32,27 +23,26 @@ from airflow.utils.trigger_rule import TriggerRule
 import logging
 
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# Configuration
 
 PROJECT_ID = "nyc-taxi-analytics-g12"
-REGION = "us-central1"
+REGION = "us-east1"
 BUCKET_NAME = "nyc-taxi-data-bucket-g12"
 SPARK_SCRIPT_PATH = f"gs://{BUCKET_NAME}/scripts/spark/spark_bronze_to_silver.py"
 
 # Dynamic cluster name with execution date
-CLUSTER_NAME = "taxi-etl-{{ ds_nodash }}-{{ ti.job_id[:8] }}"
+CLUSTER_NAME = "taxi-etl-{{ ds_nodash }}"
 
 CLUSTER_CONFIG = {
+    "config_bucket": "nyc-taxi-data-bucket-g12",
     "master_config": {
         "num_instances": 1,
-        "machine_type_uri": "n1-standard-4",
+        "machine_type_uri": "n1-standard-2",
         "disk_config": {"boot_disk_size_gb": 100},
     },
     "worker_config": {
         "num_instances": 2,
-        "machine_type_uri": "n1-standard-4",
+        "machine_type_uri": "n1-standard-2",
         "disk_config": {"boot_disk_size_gb": 100},
     },
     "software_config": {
@@ -81,9 +71,7 @@ DEFAULT_ARGS = {
 }
 
 
-# ============================================================================
-# SQL QUERIES
-# ============================================================================
+# SQL Queries
 
 REFRESH_GOLD_TABLES_SQL = """
 -- Refresh all Gold layer aggregations in a single transaction
@@ -148,9 +136,7 @@ WHERE trip_duration_minutes BETWEEN 1 AND 120
 """
 
 
-# ============================================================================
-# CALLBACK FUNCTIONS
-# ============================================================================
+# Callback Functions
 
 def log_pipeline_start(**context):
     """Log pipeline start with metadata."""
@@ -169,9 +155,7 @@ def log_pipeline_complete(**context):
     logging.info("=" * 60)
 
 
-# ============================================================================
-# DAG DEFINITION
-# ============================================================================
+# DAG Definition
 
 with DAG(
     dag_id="nyc_taxi_etl_pipeline",
@@ -185,9 +169,7 @@ with DAG(
     tags=["nyc-taxi", "etl", "event-driven", "production"],
 ) as dag:
 
-    # ========================================================================
-    # STAGE 1: INITIALIZATION
-    # ========================================================================
+    # Initialization
 
     start = PythonOperator(
         task_id="log_pipeline_start",
