@@ -1,24 +1,16 @@
--- ============================================================
--- Phase 5: Gold Layer - fact_trips (Fact Table)
--- ============================================================
--- Central fact table containing trip metrics with foreign keys
--- to all dimension tables. Partitioned and clustered for
--- optimal query performance and cost efficiency.
--- ============================================================
+-- Gold Layer - fact_trips (Fact Table)
+-- Central fact table containing trip metrics with foreign keys to dimensions.
+-- Partitioned by date and clustered for optimal query performance.
 
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.fact_trips`
 PARTITION BY DATE(pickup_datetime)
 CLUSTER BY vendor_key, pickup_location_key
 AS
 SELECT
-    -- ========================================
     -- Primary Key
-    -- ========================================
     t.id AS trip_id,
 
-    -- ========================================
     -- Foreign Keys to Dimensions
-    -- ========================================
     CONCAT(
         CAST(t.pickup_year AS STRING),
         LPAD(CAST(t.pickup_month AS STRING), 2, '0'),
@@ -29,32 +21,24 @@ SELECT
     pl.location_key AS pickup_location_key,
     dl.location_key AS dropoff_location_key,
 
-    -- ========================================
     -- Date Columns (for partitioning)
-    -- ========================================
     t.pickup_datetime,
     t.dropoff_datetime,
 
-    -- ========================================
     -- Measures (Facts)
-    -- ========================================
     t.passenger_count,
     t.trip_duration,
     t.trip_duration_minutes,
     t.distance_km,
     t.speed_kmh,
 
-    -- ========================================
     -- Raw Coordinates (for detailed analysis)
-    -- ========================================
     t.pickup_latitude,
     t.pickup_longitude,
     t.dropoff_latitude,
     t.dropoff_longitude,
 
-    -- ========================================
     -- Other Attributes
-    -- ========================================
     t.store_and_fwd_flag
 
 FROM `nyc-taxi-analytics-g12.nyc_taxi_silver.trips_enriched` t
