@@ -1,9 +1,5 @@
--- ============================================================
--- Phase 5: Gold Layer - dim_vendor (Vendor Dimension)
--- ============================================================
--- Creates the vendor dimension table mapping vendor IDs
--- to their business names.
--- ============================================================
+-- Gold Layer - dim_vendor (Vendor Dimension Table)
+-- Creates the vendor dimension mapping vendor IDs to business names.
 
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.dim_vendor` AS
 SELECT DISTINCT
