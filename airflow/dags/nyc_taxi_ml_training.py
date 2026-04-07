@@ -1,16 +1,9 @@
 """
-NYC Taxi Analytics - Weekly ML Training DAG
-============================================
+Weekly ML Training DAG for NYC Taxi Analytics.
+
 Retrains the trip duration prediction model on updated data.
-
-This DAG:
-1. Prepares ML feature dataset from Silver layer
-2. Triggers Vertex AI training job
-3. Evaluates model performance
-4. Deploys model if metrics improve
-
+Prepares features, trains model, evaluates performance, and deploys if improved.
 Schedule: Weekly on Sunday at 4:00 AM UTC
-Author: Group 12
 """
 
 from datetime import datetime, timedelta
@@ -26,9 +19,7 @@ from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.operators.dummy import DummyOperator
 
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# Configuration
 
 PROJECT_ID = "nyc-taxi-analytics-g12"
 REGION = "us-central1"
@@ -87,9 +78,7 @@ FROM `nyc-taxi-analytics-g12.nyc_taxi_ml.training_features`
 """
 
 
-# ============================================================================
-# HELPER FUNCTIONS
-# ============================================================================
+# Helper Functions
 
 def check_model_improvement(**context):
     """
@@ -119,9 +108,7 @@ def log_training_metrics(**context):
     # In production: send metrics to Cloud Monitoring
 
 
-# ============================================================================
-# DAG DEFINITION
-# ============================================================================
+# DAG Definition
 
 with DAG(
     dag_id="nyc_taxi_weekly_ml_training",
@@ -134,14 +121,10 @@ with DAG(
     tags=["nyc-taxi", "ml", "vertex-ai"],
 ) as dag:
 
-    # ========================================================================
-    # TASK: Start
-    # ========================================================================
+    # Start
     start = DummyOperator(task_id="start")
 
-    # ========================================================================
-    # TASK: Prepare ML Features
-    # ========================================================================
+    # Prepare ML Features
     prepare_features = BigQueryInsertJobOperator(
         task_id="prepare_ml_features",
         configuration={
@@ -153,9 +136,7 @@ with DAG(
         location="us-central1",
     )
 
-    # ========================================================================
-    # TASK: Data Quality Check
-    # ========================================================================
+    # Data Quality Check
     check_data_quality = BigQueryCheckOperator(
         task_id="check_data_quality",
         sql=DATA_QUALITY_CHECK_SQL,
@@ -163,26 +144,19 @@ with DAG(
         location="us-central1",
     )
 
-    # ========================================================================
-    # TASK: Train Model (Placeholder - would use Vertex AI)
-    # ========================================================================
-    # In production, use CreateCustomTrainingJobOperator
+    # Train Model (Placeholder - would use Vertex AI)
     train_model = PythonOperator(
         task_id="train_model",
         python_callable=log_training_metrics,
     )
 
-    # ========================================================================
-    # TASK: Check Model Improvement
-    # ========================================================================
+    # Check Model Improvement
     check_improvement = BranchPythonOperator(
         task_id="check_model_improvement",
         python_callable=check_model_improvement,
     )
 
-    # ========================================================================
-    # TASK: Deploy or Skip
-    # ========================================================================
+    # Deploy or Skip
     deploy_model = DummyOperator(
         task_id="deploy_new_model",
     )
@@ -191,9 +165,7 @@ with DAG(
         task_id="skip_deployment",
     )
 
-    # ========================================================================
-    # TASK: End
-    # ========================================================================
+    # End
     end = DummyOperator(
         task_id="end",
         trigger_rule="none_failed_min_one_success",
