@@ -1,9 +1,6 @@
--- ============================================================
--- Phase 5: Gold Layer - dim_location (Location Dimension)
--- ============================================================
--- Creates the location dimension table using grid-based
--- aggregation for efficient spatial analysis.
--- ============================================================
+-- Gold Layer - dim_location (Location Dimension Table)
+-- Creates the location dimension using grid-based aggregation.
+-- Enables efficient spatial analysis.
 
 CREATE OR REPLACE TABLE `nyc-taxi-analytics-g12.nyc_taxi_gold.dim_location` AS
 
