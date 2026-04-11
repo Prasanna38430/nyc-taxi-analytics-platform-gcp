@@ -22,8 +22,8 @@ An end-to-end data engineering pipeline built on **Google Cloud Platform**, impl
 │         │                                       │                    │           │
 │         │                                       ▼                    ▼           │
 │         │                              ┌──────────────┐     ┌──────────────┐    │
-│         │                              │ BigQuery ML  │     │   Looker     │    │
-│         │                              │  (Linear Reg)│     │   Studio     │    │
+│         │                              │ BigQuery ML  │     │   Power BI   │    │
+│         │                              │  (Linear Reg)│     │  (Dashboard) │    │
 │         │                              └──────────────┘     └──────────────┘    │
 │         │                                                                        │
 │         └────────────────────┬───────────────────────────────────────────────┐  │
@@ -87,7 +87,7 @@ An end-to-end data engineering pipeline built on **Google Cloud Platform**, impl
 | **ETL Processing** | Dataproc (Spark) | Data transformation & enrichment |
 | **Orchestration** | Cloud Composer | Workflow scheduling & automation |
 | **ML Platform** | BigQuery ML | Trip duration prediction (Linear Regression) |
-| **Visualization** | Looker Studio | Business intelligence dashboards |
+| **Visualization** | Power BI | Business intelligence dashboards (3-page) |
 | **IaC** | Terraform | Infrastructure provisioning |
 | **Monitoring** | Cloud Monitoring | Observability & alerting |
 
@@ -123,6 +123,13 @@ nyc-taxi-analytics-platform-gcp/
 │   └── ml/
 │       ├── trip_duration_model.sql
 │       └── phase_7_trip_duration_model.md
+├── powerbi/                     # Phase 8: Power BI Analytics Dashboard
+│   ├── phase_8_power_bi_dashboard.md
+│   ├── NYC_Taxi_Analytics_Dashboard.pbix
+│   └── screenshots/
+│       ├── Executive_Summary_Dashboard.png
+│       ├── Detailed_Analysis_Dashboard.png
+│       └── ML_Insights_Dashboard.png
 ├── monitoring/                  # Phase 10: Alerting
 │   └── alert_policies.yaml
 ├── docs/                        # Documentation
@@ -182,9 +189,35 @@ gsutil cp data/train.csv gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/
 - **Star Schema Design**: Optimized for analytical queries
 - **Partitioning & Clustering**: Cost-optimized BigQuery tables
 - **ML Pipeline**: Trip duration prediction with BigQuery ML (Linear Regression)
+- **Power BI Dashboard**: Professional 3-page analytics dashboard with KPIs and insights
 - **Automated Orchestration**: Airflow DAGs for scheduling
 - **Infrastructure as Code**: Reproducible deployments with Terraform
 - **Monitoring & Alerting**: Proactive issue detection
+
+## Phase 8: Power BI Analytics Dashboard
+
+**Status**: ✅ Complete
+
+A professional Power BI dashboard with 3 pages analyzing NYC Taxi operations:
+
+### Dashboard Pages
+1. **Executive Summary** - High-level KPIs, daily trends, vendor performance, location hotspots
+2. **Detailed Analysis** - Deep-dive patterns, hourly/daily heatmaps, vendor comparison, speed analytics
+3. **ML Insights** - Model performance metrics (72.2% accuracy), distance vs duration scatter plot, top locations
+
+### Data Integration
+- **Data Source**: BigQuery Gold Layer (8 tables)
+- **Fact Tables**: fact_trips (23M+ records)
+- **Dimension Tables**: dim_vendor, dim_datetime, dim_location
+- **Aggregated Tables**: agg_daily_summary, agg_hourly_patterns, agg_vendor_performance, agg_location_hotspots
+
+### Performance
+- **Load Mode**: Import (optimized for portfolio)
+- **Average page load**: < 2 seconds
+- **Filter response**: < 500ms
+- **Daily refresh**: Scheduled
+
+See [powerbi/phase_8_power_bi_dashboard.md](powerbi/phase_8_power_bi_dashboard.md) for complete documentation and screenshots.
 
 ## Data Quality Rules Applied
 
