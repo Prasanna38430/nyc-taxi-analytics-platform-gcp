@@ -1,6 +1,4 @@
-# ====================================
-# BRONZE DATASET - Raw Data
-# ====================================
+# Bronze dataset - Raw data
 resource "google_bigquery_dataset" "bronze" {
   dataset_id    = var.bronze_dataset
   friendly_name = "Bronze Layer - Raw Data"
@@ -62,9 +60,7 @@ resource "google_bigquery_table" "bronze_raw_trips" {
   )
 }
 
-# ====================================
-# SILVER DATASET - Cleaned Data
-# ====================================
+# Silver dataset - Cleaned data
 resource "google_bigquery_dataset" "silver" {
   dataset_id    = var.silver_dataset
   friendly_name = "Silver Layer - Cleaned Data"
@@ -142,9 +138,7 @@ resource "google_bigquery_table" "silver_trips_enriched" {
 
 # ====================================
 # GOLD DATASET - Dimensional/Analytics Ready
-# ====================================
-resource "google_bigquery_dataset" "gold" {
-  dataset_id    = var.gold_dataset
+# Gold dataset - Analytics ready
   friendly_name = "Gold Layer - Analytics Ready"
   description   = "Star schema dimensional data optimized for analytics and reporting"
   location      = var.gcp_region
@@ -287,9 +281,7 @@ resource "google_bigquery_table" "gold_agg_location_hotspots" {
 
 # ====================================
 # ML DATASET - Models & Features
-# ====================================
-resource "google_bigquery_dataset" "ml" {
-  dataset_id    = var.ml_dataset
+# ML dataset - Models and training data
   friendly_name = "ML Models & Training Data"
   description   = "BigQuery ML models and training feature datasets"
   location      = var.gcp_region
