@@ -12,22 +12,22 @@ output "gcs_bucket_url" {
 # BigQuery outputs
 output "bronze_dataset_id" {
   description = "Bronze dataset ID"
-  value       = google_bigquery_dataset.bronze.dataset_id
+  value       = data.google_bigquery_dataset.bronze.dataset_id
 }
 
 output "silver_dataset_id" {
   description = "Silver dataset ID"
-  value       = google_bigquery_dataset.silver.dataset_id
+  value       = data.google_bigquery_dataset.silver.dataset_id
 }
 
 output "gold_dataset_id" {
   description = "Gold dataset ID"
-  value       = google_bigquery_dataset.gold.dataset_id
+  value       = data.google_bigquery_dataset.gold.dataset_id
 }
 
 output "ml_dataset_id" {
   description = "ML dataset ID"
-  value       = google_bigquery_dataset.ml.dataset_id
+  value       = data.google_bigquery_dataset.ml.dataset_id
 }
 
 # Service account outputs

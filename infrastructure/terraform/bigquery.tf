@@ -238,7 +238,7 @@ resource "google_bigquery_table" "ml_training_features" {
 
 # ML: Training Features Sample Table
 resource "google_bigquery_table" "ml_training_features_sample" {
-  dataset_id          = google_bigquery_dataset.ml.dataset_id
+  dataset_id          = data.google_bigquery_dataset.ml.dataset_id
   table_id            = "training_features_sample"
   deletion_protection = false
 
