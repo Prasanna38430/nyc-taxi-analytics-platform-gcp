@@ -6,7 +6,7 @@ locals {
   zone       = var.gcp_zone
 
   common_labels = {
-    project     = var.project_name
+    project     = lower(replace(var.project_name, " ", "-"))
     environment = var.environment
     managed_by  = "terraform"
   }
