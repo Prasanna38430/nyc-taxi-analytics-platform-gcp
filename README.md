@@ -97,33 +97,45 @@ An end-to-end data engineering pipeline built on **Google Cloud Platform**, impl
 nyc-taxi-analytics-platform-gcp/
 ├── README.md
 ├── .gitignore
-├── infrastructure/              # Phase 1-2 & 9: Setup & Terraform IaC
+├── infrastructure/              # Phase 1-2, 9-10: Setup & IaC
 │   ├── 01_setup_project.sh
 │   ├── 02_setup_storage.sh
 │   ├── terraform/               # Phase 9: Infrastructure as Code
-│   │   ├── main.tf
-│   │   ├── providers.tf
-│   │   ├── variables.tf
-│   │   ├── apis.tf
-│   │   ├── storage.tf
-│   │   ├── iam.tf
-│   │   ├── bigquery.tf
-│   │   ├── firewall.tf
-│   │   ├── outputs.tf
-│   │   └── README.md
-│   └── monitoring/              # Phase 10: Alerting (pending)
-│       └── alert_policies.yaml
-├── bigquery/
+│   │   ├── Core Files
+│   │   │   ├── main.tf
+│   │   │   ├── providers.tf
+│   │   │   ├── variables.tf
+│   │   │   ├── apis.tf
+│   │   │   ├── storage.tf
+│   │   │   ├── iam.tf
+│   │   │   ├── bigquery.tf
+│   │   │   ├── firewall.tf
+│   │   │   ├── outputs.tf
+│   │   │   ├── terraform.tfvars
+│   │   │   └── README.md
+│   │   └── Phase 10: Monitoring & Alerting
+│   │       ├── notification_channels.tf
+│   │       ├── alert_policies.tf
+│   │       ├── custom_metrics.tf
+│   │       ├── log_based_metrics.tf
+│   │       ├── metric_based_alerts.tf
+│   │       ├── monitoring_dashboard.tf
+│   │       ├── phase_10_monitoring_alerting.md
+│   │       └── DEPLOYMENT_INSTRUCTIONS.md
+├── bigquery/                    # Phases 3-7: BigQuery schemas & ML
 │   ├── bronze/                  # Phase 3: External table
 │   │   └── create_external_table.sql
 │   ├── silver/                  # Phase 4: Enriched schema
 │   │   └── schema.sql
-│   └── gold/                    # Phase 5: Star schema
-│       ├── dim_datetime.sql
-│       ├── dim_location.sql
-│       ├── dim_vendor.sql
-│       ├── fact_trips.sql
-│       └── aggregations.sql
+│   ├── gold/                    # Phase 5: Star schema
+│   │   ├── dim_datetime.sql
+│   │   ├── dim_location.sql
+│   │   ├── dim_vendor.sql
+│   │   ├── fact_trips.sql
+│   │   └── aggregations.sql
+│   └── ml/                      # Phase 7: ML Pipeline
+│       ├── trip_duration_model.sql
+│       └── phase_7_trip_duration_model.md
 ├── dataproc/                    # Phase 4: Spark ETL
 │   └── spark_bronze_to_silver.py
 ├── airflow/                     # Phase 6: Orchestration
@@ -135,10 +147,6 @@ nyc-taxi-analytics-platform-gcp/
 │   └── trigger_dag/
 │       ├── main.py
 │       └── requirements.txt
-├── bigquery/                    # Phase 7: ML Pipeline
-│   └── ml/
-│       ├── trip_duration_model.sql
-│       └── phase_7_trip_duration_model.md
 ├── powerbi/                     # Phase 8: Power BI Dashboard
 │   ├── phase_8_power_bi_dashboard.md
 │   ├── NYC_Taxi_Analytics_Dashboard.pbix
@@ -284,6 +292,82 @@ terraform apply
 - **APIs**: 25 Google Cloud APIs enabled
 
 See [infrastructure/terraform/README.md](infrastructure/terraform/README.md) for detailed documentation.
+
+## Phase 10: Cloud Monitoring & Alerting
+
+**Status**: ✅ Complete
+
+Comprehensive monitoring and alerting infrastructure using Google Cloud's native services:
+
+### Alert Policies (14 Total)
+
+**Critical Alerts (Failures):**
+- Dataproc cluster creation failures
+- Spark job execution failures
+- BigQuery job failures
+- Cloud Function invocation errors
+
+**Data Quality Alerts:**
+- Data not updated for 24+ hours
+- Pipeline success rate drops below 95%
+- Data quality issues detected (nulls, duplicates)
+
+**Performance & Resource Alerts:**
+- High CPU usage (> 80%)
+- High memory usage (> 85%)
+- ETL jobs running > 1 hour
+- API response time > 5 seconds
+- ETL processing rate < 1000 rows/minute
+- Error rate exceeds 5%
+- GCS bucket exceeds 100 GB
+
+### Notification Channels
+
+- **Email**: prasannakumaradabala20@gmail.com
+- **MS Teams**: Webhook integration for instant alerts
+
+### Custom Metrics (12 Total)
+
+| Metric | Type | Purpose |
+|--------|------|---------|
+| `rows_processed` | DELTA | Track ETL throughput |
+| `etl_duration_minutes` | GAUGE | Monitor job duration |
+| `data_freshness_hours` | GAUGE | Track data currency |
+| `error_rate` | GAUGE | Monitor reliability |
+| `pipeline_success_count` | DELTA | Success tracking |
+| `pipeline_failure_count` | DELTA | Failure tracking |
+| `etl_processing_rate` | GAUGE | Performance metric |
+| `data_quality_issues` | DELTA | Quality monitoring |
+| `api_response_time_ms` | GAUGE | Performance tracking |
+| `bigquery_data_scanned_gb` | DELTA | Cost monitoring |
+| `dataproc_creation_failed` | DELTA | Infrastructure tracking |
+| `warning_count` | DELTA | Issue detection |
+
+### Monitoring Dashboard
+
+Real-time Cloud Monitoring dashboard with 12 tiles across 6 rows:
+
+1. **Row 1**: Pipeline Status KPIs (Total Jobs, Failed Jobs, BigQuery Errors, Data Freshness)
+2. **Row 2**: Resource Utilization (Dataproc CPU & Memory)
+3. **Row 3**: BigQuery Metrics (Job Execution Time, Data Scanned)
+4. **Row 4**: ETL Metrics (Rows Processed, Duration, Error Rate)
+5. **Row 5**: Cloud Function Metrics (Invocations, Errors)
+6. **Row 6**: Storage Metrics (Bucket Size, Object Count)
+
+### Terraform IaC
+
+All monitoring infrastructure defined in code:
+```
+infrastructure/terraform/
+├── notification_channels.tf       # Email & Teams webhooks
+├── alert_policies.tf              # 14 alert policies
+├── custom_metrics.tf              # Custom metric definitions
+├── log_based_metrics.tf           # Log-based metrics from Cloud Logging
+├── metric_based_alerts.tf         # Threshold-based alerts
+└── monitoring_dashboard.tf        # Cloud Monitoring dashboard
+```
+
+See [infrastructure/terraform/phase_10_monitoring_alerting.md](infrastructure/terraform/phase_10_monitoring_alerting.md) for complete monitoring guide.
 
 ## Data Quality Rules Applied
 
