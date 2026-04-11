@@ -66,7 +66,7 @@ resource "google_logging_metric" "etl_processing_rate" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    unit        = "1/min"
+    unit        = "1"
 
     labels {
       key         = "job_id"
@@ -124,7 +124,7 @@ resource "google_logging_metric" "api_response_time_ms" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    unit        = "ms"
+    unit        = "1"
 
     labels {
       key         = "api_name"

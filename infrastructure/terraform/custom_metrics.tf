@@ -37,7 +37,7 @@ resource "google_logging_metric" "etl_duration_minutes" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    unit        = "min"
+    unit        = "1"
 
     labels {
       key         = "stage"
@@ -66,7 +66,7 @@ resource "google_logging_metric" "data_freshness_hours" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    unit        = "h"
+    unit        = "1"
 
     labels {
       key         = "dataset"
@@ -95,7 +95,7 @@ resource "google_logging_metric" "error_rate" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    unit        = "%"
+    unit        = "1"
 
     labels {
       key         = "service"
@@ -153,7 +153,7 @@ resource "google_logging_metric" "bigquery_data_scanned_gb" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    unit        = "GB"
+    unit        = "1"
 
     labels {
       key         = "dataset"

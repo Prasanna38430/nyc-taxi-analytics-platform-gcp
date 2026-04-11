@@ -22,5 +22,6 @@ resource "google_compute_firewall" "allow_dataproc_internal" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes = all
   }
 }
