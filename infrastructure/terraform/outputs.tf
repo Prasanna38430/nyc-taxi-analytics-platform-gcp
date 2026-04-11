@@ -33,12 +33,12 @@ output "ml_dataset_id" {
 # Service account outputs
 output "service_account_email" {
   description = "Pipeline service account email"
-  value       = google_service_account.pipeline_sa.email
+  value       = data.google_service_account.pipeline_sa.email
 }
 
 output "service_account_id" {
   description = "Pipeline service account unique ID"
-  value       = google_service_account.pipeline_sa.unique_id
+  value       = data.google_service_account.pipeline_sa.unique_id
 }
 
 # ====================================

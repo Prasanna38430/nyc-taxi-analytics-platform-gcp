@@ -17,7 +17,7 @@ resource "google_bigquery_dataset" "bronze" {
 
   access {
     role          = "OWNER"
-    user_by_email = google_service_account.pipeline_sa.email
+    user_by_email = data.google_service_account.pipeline_sa.email
   }
 }
 
@@ -67,7 +67,7 @@ resource "google_bigquery_dataset" "silver" {
 
   access {
     role          = "OWNER"
-    user_by_email = google_service_account.pipeline_sa.email
+    user_by_email = data.google_service_account.pipeline_sa.email
   }
 }
 
@@ -143,7 +143,7 @@ resource "google_bigquery_dataset" "gold" {
 
   access {
     role          = "OWNER"
-    user_by_email = google_service_account.pipeline_sa.email
+    user_by_email = data.google_service_account.pipeline_sa.email
   }
 }
 
@@ -286,7 +286,7 @@ resource "google_bigquery_dataset" "ml" {
 
   access {
     role          = "OWNER"
-    user_by_email = google_service_account.pipeline_sa.email
+    user_by_email = data.google_service_account.pipeline_sa.email
   }
 }
 
