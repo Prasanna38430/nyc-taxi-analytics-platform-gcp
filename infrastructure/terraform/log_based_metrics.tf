@@ -64,8 +64,8 @@ resource "google_logging_metric" "etl_processing_rate" {
   filter = "resource.type=\"dataproc_cluster\" AND jsonPayload.rows_processed=~\"[0-9]+\" AND jsonPayload.processing_time_seconds=~\"[0-9]+\""
 
   metric_descriptor {
-    metric_kind = "GAUGE"
-    value_type  = "DOUBLE"
+    metric_kind = "DELTA"
+    value_type  = "INT64"
     unit        = "1/min"
 
     labels {
@@ -122,7 +122,7 @@ resource "google_logging_metric" "api_response_time_ms" {
   filter = "resource.type=\"api\" AND jsonPayload.response_time_ms=~\"[0-9]+\""
 
   metric_descriptor {
-    metric_kind = "GAUGE"
+    metric_kind = "DELTA"
     value_type  = "INT64"
     unit        = "ms"
 

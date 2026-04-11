@@ -86,7 +86,7 @@ resource "google_monitoring_dashboard" "pipeline_dashboard" {
               dataSets = [{
                 timeSeriesQuery = {
                   timeSeriesFilter = {
-                    filter = "resource.type=\"gce_instance\" AND metric.type=\"compute.googleapis.com/instance/cpu/utilization\" AND resource.label.instance_group_name=~\".*dataproc.*\""
+                    filter = "resource.type=\"gce_instance\" AND metric.type=\"compute.googleapis.com/instance/cpu/utilization\""
                   }
                 }
               }]
@@ -104,7 +104,7 @@ resource "google_monitoring_dashboard" "pipeline_dashboard" {
               dataSets = [{
                 timeSeriesQuery = {
                   timeSeriesFilter = {
-                    filter = "resource.type=\"gce_instance\" AND metric.type=\"compute.googleapis.com/instance/memory/usage\" AND resource.label.instance_group_name=~\".*dataproc.*\""
+                    filter = "resource.type=\"gce_instance\" AND metric.type=\"compute.googleapis.com/instance/memory/usage\""
                   }
                 }
               }]

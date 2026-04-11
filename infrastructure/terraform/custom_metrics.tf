@@ -8,7 +8,7 @@ resource "google_logging_metric" "rows_processed" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    unit        = "By"
+    unit        = "1"
 
     labels {
       key         = "cluster_name"
@@ -35,7 +35,7 @@ resource "google_logging_metric" "etl_duration_minutes" {
   filter = "resource.type=\"dataproc_cluster\" AND jsonPayload.duration_minutes=~\"[0-9]+\""
 
   metric_descriptor {
-    metric_kind = "GAUGE"
+    metric_kind = "DELTA"
     value_type  = "INT64"
     unit        = "min"
 
@@ -64,7 +64,7 @@ resource "google_logging_metric" "data_freshness_hours" {
   filter = "resource.type=\"bigquery_project\" AND jsonPayload.freshness_hours=~\"[0-9]+\""
 
   metric_descriptor {
-    metric_kind = "GAUGE"
+    metric_kind = "DELTA"
     value_type  = "INT64"
     unit        = "h"
 
@@ -93,8 +93,8 @@ resource "google_logging_metric" "error_rate" {
   filter = "severity=\"ERROR\" AND (resource.type=\"cloud_function\" OR resource.type=\"dataproc_cluster\" OR resource.type=\"bigquery_project\")"
 
   metric_descriptor {
-    metric_kind = "GAUGE"
-    value_type  = "DOUBLE"
+    metric_kind = "DELTA"
+    value_type  = "INT64"
     unit        = "%"
 
     labels {
@@ -152,7 +152,7 @@ resource "google_logging_metric" "bigquery_data_scanned_gb" {
 
   metric_descriptor {
     metric_kind = "DELTA"
-    value_type  = "DOUBLE"
+    value_type  = "INT64"
     unit        = "GB"
 
     labels {

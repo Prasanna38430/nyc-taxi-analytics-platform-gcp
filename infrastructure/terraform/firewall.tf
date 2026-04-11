@@ -19,4 +19,8 @@ resource "google_compute_firewall" "allow_dataproc_internal" {
 
   source_ranges = ["0.0.0.0/0"]
   priority      = 1000
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
