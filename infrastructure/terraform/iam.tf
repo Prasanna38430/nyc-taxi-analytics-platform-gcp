@@ -3,8 +3,6 @@ resource "google_service_account" "pipeline_sa" {
   account_id   = var.service_account_name
   display_name = "NYC Taxi Analytics Pipeline"
   description  = "Service account for ETL pipeline, Dataproc, Cloud Functions, and BigQuery"
-
-  labels = local.common_labels
 }
 
 # IAM roles
