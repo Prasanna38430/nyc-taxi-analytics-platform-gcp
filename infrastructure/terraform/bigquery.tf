@@ -5,7 +5,7 @@ resource "google_bigquery_dataset" "bronze" {
   description   = "Raw unprocessed NYC taxi trip data from GCS"
   location      = var.gcp_region
 
-  default_table_expiration_ms = 0
+  default_table_expiration_ms = null
 
   labels = merge(
     local.common_labels,
@@ -67,7 +67,7 @@ resource "google_bigquery_dataset" "silver" {
   description   = "Deduplicated and enriched NYC taxi trip data"
   location      = var.gcp_region
 
-  default_table_expiration_ms = 0
+  default_table_expiration_ms = null
 
   labels = merge(
     local.common_labels,
@@ -143,7 +143,7 @@ resource "google_bigquery_dataset" "gold" {
   description   = "Star schema dimensional data optimized for analytics and reporting"
   location      = var.gcp_region
 
-  default_table_expiration_ms = 0
+  default_table_expiration_ms = null
 
   labels = merge(
     local.common_labels,
@@ -286,7 +286,7 @@ resource "google_bigquery_dataset" "ml" {
   description   = "BigQuery ML models and training feature datasets"
   location      = var.gcp_region
 
-  default_table_expiration_ms = 0
+  default_table_expiration_ms = null
 
   labels = merge(
     local.common_labels,
