@@ -136,9 +136,9 @@ resource "google_bigquery_table" "silver_trips_enriched" {
   )
 }
 
-# ====================================
-# GOLD DATASET - Dimensional/Analytics Ready
 # Gold dataset - Analytics ready
+resource "google_bigquery_dataset" "gold" {
+  dataset_id    = var.gold_dataset
   friendly_name = "Gold Layer - Analytics Ready"
   description   = "Star schema dimensional data optimized for analytics and reporting"
   location      = var.gcp_region
@@ -279,9 +279,9 @@ resource "google_bigquery_table" "gold_agg_location_hotspots" {
   )
 }
 
-# ====================================
-# ML DATASET - Models & Features
 # ML dataset - Models and training data
+resource "google_bigquery_dataset" "ml" {
+  dataset_id    = var.ml_dataset
   friendly_name = "ML Models & Training Data"
   description   = "BigQuery ML models and training feature datasets"
   location      = var.gcp_region
