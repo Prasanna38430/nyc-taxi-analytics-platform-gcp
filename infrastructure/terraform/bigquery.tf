@@ -1,29 +1,12 @@
-# Bronze dataset - Raw data
-resource "google_bigquery_dataset" "bronze" {
-  dataset_id    = var.bronze_dataset
-  friendly_name = "Bronze Layer - Raw Data"
-  description   = "Raw unprocessed NYC taxi trip data from GCS"
-  location      = var.gcp_region
-
-  default_table_expiration_ms = null
-
-  labels = merge(
-    local.common_labels,
-    {
-      layer = "bronze"
-      stage = "ingestion"
-    }
-  )
-
-  access {
-    role          = "OWNER"
-    user_by_email = data.google_service_account.pipeline_sa.email
-  }
+# Bronze dataset - Reference existing dataset
+data "google_bigquery_dataset" "bronze" {
+  dataset_id = var.bronze_dataset
+  project    = var.gcp_project_id
 }
 
 # Bronze External Table: raw_trips
 resource "google_bigquery_table" "bronze_raw_trips" {
-  dataset_id = google_bigquery_dataset.bronze.dataset_id
+  dataset_id = data.google_bigquery_dataset.bronze.dataset_id
   table_id   = "raw_trips"
 
   schema = jsonencode([
@@ -48,32 +31,15 @@ resource "google_bigquery_table" "bronze_raw_trips" {
   )
 }
 
-# Silver dataset - Cleaned data
-resource "google_bigquery_dataset" "silver" {
-  dataset_id    = var.silver_dataset
-  friendly_name = "Silver Layer - Cleaned Data"
-  description   = "Deduplicated and enriched NYC taxi trip data"
-  location      = var.gcp_region
-
-  default_table_expiration_ms = null
-
-  labels = merge(
-    local.common_labels,
-    {
-      layer = "silver"
-      stage = "transformation"
-    }
-  )
-
-  access {
-    role          = "OWNER"
-    user_by_email = data.google_service_account.pipeline_sa.email
-  }
+# Silver dataset - Reference existing dataset
+data "google_bigquery_dataset" "silver" {
+  dataset_id = var.silver_dataset
+  project    = var.gcp_project_id
 }
 
 # Silver Table: trips_enriched
 resource "google_bigquery_table" "silver_trips_enriched" {
-  dataset_id            = google_bigquery_dataset.silver.dataset_id
+  dataset_id            = data.google_bigquery_dataset.silver.dataset_id
   table_id              = "trips_enriched"
   deletion_protection   = false
 
@@ -124,32 +90,15 @@ resource "google_bigquery_table" "silver_trips_enriched" {
   )
 }
 
-# Gold dataset - Analytics ready
-resource "google_bigquery_dataset" "gold" {
-  dataset_id    = var.gold_dataset
-  friendly_name = "Gold Layer - Analytics Ready"
-  description   = "Star schema dimensional data optimized for analytics and reporting"
-  location      = var.gcp_region
-
-  default_table_expiration_ms = null
-
-  labels = merge(
-    local.common_labels,
-    {
-      layer = "gold"
-      stage = "presentation"
-    }
-  )
-
-  access {
-    role          = "OWNER"
-    user_by_email = data.google_service_account.pipeline_sa.email
-  }
+# Gold dataset - Reference existing dataset
+data "google_bigquery_dataset" "gold" {
+  dataset_id = var.gold_dataset
+  project    = var.gcp_project_id
 }
 
 # Gold: Fact Table - fact_trips
 resource "google_bigquery_table" "gold_fact_trips" {
-  dataset_id            = google_bigquery_dataset.gold.dataset_id
+  dataset_id            = data.google_bigquery_dataset.gold.dataset_id
   table_id              = "fact_trips"
   deletion_protection   = false
 
@@ -171,7 +120,7 @@ resource "google_bigquery_table" "gold_fact_trips" {
 
 # Gold: Dimension Table - dim_vendor
 resource "google_bigquery_table" "gold_dim_vendor" {
-  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  dataset_id          = data.google_bigquery_dataset.gold.dataset_id
   table_id            = "dim_vendor"
   deletion_protection = false
 
@@ -185,7 +134,7 @@ resource "google_bigquery_table" "gold_dim_vendor" {
 
 # Gold: Dimension Table - dim_datetime
 resource "google_bigquery_table" "gold_dim_datetime" {
-  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  dataset_id          = data.google_bigquery_dataset.gold.dataset_id
   table_id            = "dim_datetime"
   deletion_protection = false
 
@@ -199,7 +148,7 @@ resource "google_bigquery_table" "gold_dim_datetime" {
 
 # Gold: Dimension Table - dim_location
 resource "google_bigquery_table" "gold_dim_location" {
-  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  dataset_id          = data.google_bigquery_dataset.gold.dataset_id
   table_id            = "dim_location"
   deletion_protection = false
 
@@ -213,7 +162,7 @@ resource "google_bigquery_table" "gold_dim_location" {
 
 # Gold: Aggregation Table - agg_daily_summary
 resource "google_bigquery_table" "gold_agg_daily_summary" {
-  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  dataset_id          = data.google_bigquery_dataset.gold.dataset_id
   table_id            = "agg_daily_summary"
   deletion_protection = false
 
@@ -227,7 +176,7 @@ resource "google_bigquery_table" "gold_agg_daily_summary" {
 
 # Gold: Aggregation Table - agg_hourly_patterns
 resource "google_bigquery_table" "gold_agg_hourly_patterns" {
-  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  dataset_id          = data.google_bigquery_dataset.gold.dataset_id
   table_id            = "agg_hourly_patterns"
   deletion_protection = false
 
@@ -241,7 +190,7 @@ resource "google_bigquery_table" "gold_agg_hourly_patterns" {
 
 # Gold: Aggregation Table - agg_vendor_performance
 resource "google_bigquery_table" "gold_agg_vendor_performance" {
-  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  dataset_id          = data.google_bigquery_dataset.gold.dataset_id
   table_id            = "agg_vendor_performance"
   deletion_protection = false
 
@@ -255,7 +204,7 @@ resource "google_bigquery_table" "gold_agg_vendor_performance" {
 
 # Gold: Aggregation Table - agg_location_hotspots
 resource "google_bigquery_table" "gold_agg_location_hotspots" {
-  dataset_id          = google_bigquery_dataset.gold.dataset_id
+  dataset_id          = data.google_bigquery_dataset.gold.dataset_id
   table_id            = "agg_location_hotspots"
   deletion_protection = false
 
@@ -267,32 +216,15 @@ resource "google_bigquery_table" "gold_agg_location_hotspots" {
   )
 }
 
-# ML dataset - Models and training data
-resource "google_bigquery_dataset" "ml" {
-  dataset_id    = var.ml_dataset
-  friendly_name = "ML Models & Training Data"
-  description   = "BigQuery ML models and training feature datasets"
-  location      = var.gcp_region
-
-  default_table_expiration_ms = null
-
-  labels = merge(
-    local.common_labels,
-    {
-      layer = "ml"
-      stage = "models"
-    }
-  )
-
-  access {
-    role          = "OWNER"
-    user_by_email = data.google_service_account.pipeline_sa.email
-  }
+# ML dataset - Reference existing dataset
+data "google_bigquery_dataset" "ml" {
+  dataset_id = var.ml_dataset
+  project    = var.gcp_project_id
 }
 
 # ML: Training Features Table
 resource "google_bigquery_table" "ml_training_features" {
-  dataset_id          = google_bigquery_dataset.ml.dataset_id
+  dataset_id          = data.google_bigquery_dataset.ml.dataset_id
   table_id            = "training_features"
   deletion_protection = false
 

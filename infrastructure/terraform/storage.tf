@@ -1,6 +1,6 @@
 # GCS Bucket for all data and configurations
 resource "google_storage_bucket" "data_bucket" {
-  name          = var.gcs_bucket_name
+  name          = "${var.gcs_bucket_name}-${data.google_client_config.current.project}"
   location      = var.gcp_region
   force_destroy = false
 

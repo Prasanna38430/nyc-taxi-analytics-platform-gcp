@@ -13,3 +13,6 @@ provider "google" {
   region  = var.gcp_region
   zone    = var.gcp_zone
 }
+
+# Get current GCP project for bucket naming
+data "google_client_config" "current" {}
