@@ -65,12 +65,20 @@ ML LAYER (Models & Features)
 - Default VPC network (multi-region)
 - Firewall rule: `allow-dataproc-internal` (TCP/UDP/ICMP)
 
-#### APIs (16 enabled)
+#### APIs (25 enabled)
 - BigQuery, BigQuery Data Transfer, BigQuery Storage
 - Cloud Build, Cloud Functions, Cloud Composer
 - Compute Engine, Cloud Dataproc, Eventarc
 - IAM, Cloud Logging, Cloud Monitoring
 - Cloud Run, Cloud Storage, Workflows
+- Cloud Trace, Cloud Profiler, Error Reporting
+
+#### Monitoring & Alerting (Phase 10)
+- Notification channels: Email & MS Teams webhook
+- 14 alert policies for critical failures, data quality, and performance
+- 12 custom metrics for ETL pipeline tracking
+- Cloud Monitoring dashboard with 12 tiles
+- Automatic failure detection and alerting
 
 ---
 
@@ -78,17 +86,28 @@ ML LAYER (Models & Features)
 
 ```
 infrastructure/terraform/
-├── providers.tf            # GCP provider setup
-├── variables.tf            # Input variables
-├── main.tf                 # Common locals
-├── storage.tf              # GCS bucket & folders
-├── bigquery.tf             # 4 datasets & 12 tables
-├── iam.tf                  # Service account & 9 roles
-├── firewall.tf             # Dataproc firewall rules
-├── apis.tf                 # 16 enabled APIs
-├── outputs.tf              # Output values
-├── terraform.tfvars        # Variable values
-└── README.md               # This file
+├── Core Infrastructure (Phase 9)
+│   ├── providers.tf            # GCP provider setup
+│   ├── variables.tf            # Input variables
+│   ├── main.tf                 # Common locals
+│   ├── storage.tf              # GCS bucket & folders
+│   ├── bigquery.tf             # 4 datasets & 12 tables
+│   ├── iam.tf                  # Service account & 9 roles
+│   ├── firewall.tf             # Dataproc firewall rules
+│   ├── apis.tf                 # 16 enabled APIs
+│   ├── outputs.tf              # Output values
+│   └── terraform.tfvars        # Variable values
+├── Monitoring & Alerting (Phase 10)
+│   ├── notification_channels.tf     # Email & Teams webhooks
+│   ├── alert_policies.tf            # 14 alert policies
+│   ├── custom_metrics.tf            # Custom metric definitions
+│   ├── log_based_metrics.tf         # Log-based metrics
+│   ├── metric_based_alerts.tf       # Threshold-based alerts
+│   └── monitoring_dashboard.tf      # Cloud Monitoring dashboard
+├── Documentation
+│   ├── README.md                     # This file
+│   ├── phase_10_monitoring_alerting.md   # Phase 10 complete guide
+│   └── DEPLOYMENT_INSTRUCTIONS.md       # Deployment steps
 ```
 
 ---
@@ -311,9 +330,15 @@ terraform init -upgrade
 
 ## Next Phases
 
-### Phase 10: Cloud Monitoring & Alerting
-- Monitoring dashboard for pipeline health
-- Alerts for failures and anomalies
+### Phase 10: Cloud Monitoring & Alerting ✅ COMPLETE
+- ✅ Notification channels (Email & Teams)
+- ✅ 14 Alert policies for failures and anomalies
+- ✅ Custom metrics for ETL pipeline tracking
+- ✅ Log-based metrics from Cloud Logging
+- ✅ Metric-based threshold alerts
+- ✅ Monitoring dashboard with 12 tiles
+
+See [phase_10_monitoring_alerting.md](phase_10_monitoring_alerting.md) for complete monitoring guide.
 
 ### Phase 11: Testing, CI/CD & Documentation
 - Unit tests for Spark jobs
