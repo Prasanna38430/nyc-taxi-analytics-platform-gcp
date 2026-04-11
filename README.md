@@ -217,6 +217,12 @@ A professional Power BI dashboard with 3 pages analyzing NYC Taxi operations:
 - **Filter response**: < 500ms
 - **Daily refresh**: Scheduled
 
+### Dashboard Workbook
+- **File**: `powerbi/NYC_Taxi_Analytics_Dashboard.pbix` (84 MB)
+- **Connection**: BigQuery OAuth (prasannakumar4398@gmail.com)
+- **Update Frequency**: Daily refresh scheduled
+- **How to Use**: Open in Power BI Desktop → Refresh → Explore interactive dashboards
+
 See [powerbi/phase_8_power_bi_dashboard.md](powerbi/phase_8_power_bi_dashboard.md) for complete documentation and screenshots.
 
 ## Data Quality Rules Applied
