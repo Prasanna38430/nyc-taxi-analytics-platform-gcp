@@ -97,12 +97,22 @@ An end-to-end data engineering pipeline built on **Google Cloud Platform**, impl
 nyc-taxi-analytics-platform-gcp/
 ├── README.md
 ├── .gitignore
-├── infrastructure/              # Phase 1-2: Setup scripts & Terraform
+├── infrastructure/              # Phase 1-2 & 9: Setup & Terraform IaC
 │   ├── 01_setup_project.sh
 │   ├── 02_setup_storage.sh
-│   ├── main.tf
-│   ├── variables.tf
-│   └── outputs.tf
+│   ├── terraform/               # Phase 9: Infrastructure as Code
+│   │   ├── main.tf
+│   │   ├── providers.tf
+│   │   ├── variables.tf
+│   │   ├── apis.tf
+│   │   ├── storage.tf
+│   │   ├── iam.tf
+│   │   ├── bigquery.tf
+│   │   ├── firewall.tf
+│   │   ├── outputs.tf
+│   │   └── README.md
+│   └── monitoring/              # Phase 10: Alerting (pending)
+│       └── alert_policies.yaml
 ├── bigquery/
 │   ├── bronze/                  # Phase 3: External table
 │   │   └── create_external_table.sql
@@ -118,20 +128,24 @@ nyc-taxi-analytics-platform-gcp/
 │   └── spark_bronze_to_silver.py
 ├── airflow/                     # Phase 6: Orchestration
 │   └── dags/
-│       └── nyc_taxi_pipeline_dag.py
-├── bigquery/                    # Phase 7: ML Pipeline (BigQuery ML)
+│       ├── nyc_taxi_daily_pipeline.py
+│       ├── nyc_taxi_etl_pipeline.py
+│       └── nyc_taxi_ml_training.py
+├── cloud_functions/             # Cloud Functions integration
+│   └── trigger_dag/
+│       ├── main.py
+│       └── requirements.txt
+├── bigquery/                    # Phase 7: ML Pipeline
 │   └── ml/
 │       ├── trip_duration_model.sql
 │       └── phase_7_trip_duration_model.md
-├── powerbi/                     # Phase 8: Power BI Analytics Dashboard
+├── powerbi/                     # Phase 8: Power BI Dashboard
 │   ├── phase_8_power_bi_dashboard.md
 │   ├── NYC_Taxi_Analytics_Dashboard.pbix
 │   └── screenshots/
 │       ├── Executive_Summary_Dashboard.png
 │       ├── Detailed_Analysis_Dashboard.png
 │       └── ML_Insights_Dashboard.png
-├── monitoring/                  # Phase 10: Alerting
-│   └── alert_policies.yaml
 ├── docs/                        # Documentation
 │   └── architecture.md
 └── tests/                       # Unit & integration tests
@@ -224,6 +238,52 @@ A professional Power BI dashboard with 3 pages analyzing NYC Taxi operations:
 - **How to Use**: Open in Power BI Desktop → Refresh → Explore interactive dashboards
 
 See [powerbi/phase_8_power_bi_dashboard.md](powerbi/phase_8_power_bi_dashboard.md) for complete documentation and screenshots.
+
+## Phase 9: Infrastructure as Code (Terraform)
+
+**Status**: ✅ Complete
+
+Production-ready Terraform configuration for GCP infrastructure deployment:
+
+### Terraform Modules
+
+| File | Purpose | Resources |
+|------|---------|-----------|
+| `main.tf` | Local variables & common labels | Standardized tagging |
+| `providers.tf` | Terraform & provider version constraints | GCP provider ~> 5.0 |
+| `variables.tf` | Input variables for project configuration | GCP project, region, zone, dataset names |
+| `apis.tf` | Google Cloud API enablement | 25 APIs via for_each loop |
+| `storage.tf` | GCS bucket & folder structure | Data bucket with 8 folders |
+| `iam.tf` | Service account & IAM roles | 9 role assignments |
+| `bigquery.tf` | BigQuery datasets & tables | 4 datasets, 12 tables |
+| `firewall.tf` | Compute firewall rules | Dataproc internal communication |
+| `outputs.tf` | Output values for reference | Bucket name, dataset IDs, service account |
+
+### Key Features
+- **Modular Design**: Organized by GCP service
+- **DRY Principle**: Uses locals for common labels
+- **for_each Loops**: Efficient API and resource management
+- **Service Account**: Dedicated SA for pipeline with minimal required permissions
+- **IAM Roles**: 9 roles including BigQuery, Dataproc, Cloud Composer, IAM User, Storage Admin
+- **Partitioning & Clustering**: Optimized BigQuery tables for performance
+- **Cost Optimization**: Proper resource configuration for budget control
+
+### Deployment
+```bash
+cd infrastructure/terraform
+terraform init
+terraform plan
+terraform apply
+```
+
+### Managed Resources
+- **Compute**: Dataproc cluster firewall rules
+- **BigQuery**: 4 datasets (Bronze, Silver, Gold, ML) with 12 tables
+- **Storage**: GCS bucket with folder structure for raw data, configs, ML artifacts
+- **IAM**: Service account with 9 role assignments
+- **APIs**: 25 Google Cloud APIs enabled
+
+See [infrastructure/terraform/README.md](infrastructure/terraform/README.md) for detailed documentation.
 
 ## Data Quality Rules Applied
 
