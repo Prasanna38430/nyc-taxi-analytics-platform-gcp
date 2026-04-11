@@ -141,10 +141,26 @@ Professional Power BI dashboard for NYC Taxi Trip Analytics built on BigQuery Go
 
 ## Dashboard Files
 
-- **NYC_Taxi_Analytics_Dashboard.pbix** - Main Power BI workbook
-- **screenshots/Executive_Summary_Dashboard.png** - Page 1: Executive Summary
-- **screenshots/Detailed_Analysis_Dashboard.png** - Page 2: Detailed Analysis
-- **screenshots/ML_Insights_Dashboard.png** - Page 3: ML Model Insights
+### Main Workbook
+- **NYC_Taxi_Analytics_Dashboard.pbix** (84 MB)
+  - Complete Power BI workbook with all 3 dashboard pages
+  - Import mode optimized for performance
+  - All DAX measures and fields configured
+  - Ready to refresh from BigQuery connection
+
+### Documentation & Screenshots
+- **phase_8_power_bi_dashboard.md** - Complete dashboard documentation
+- **screenshots/Executive_Summary_Dashboard.png** - Page 1 screenshot
+- **screenshots/Detailed_Analysis_Dashboard.png** - Page 2 screenshot
+- **screenshots/ML_Insights_Dashboard.png** - Page 3 screenshot
+
+## Opening the Dashboard
+
+1. Install Power BI Desktop (latest version)
+2. Open `NYC_Taxi_Analytics_Dashboard.pbix`
+3. Authenticate with Google OAuth (prasannakumar4398@gmail.com)
+4. Click "Refresh" to sync data from BigQuery Gold Layer
+5. Explore the 3-page dashboard with interactive visuals and filters
 
 ## Author
 Group 12 - NYC Taxi Analytics Portfolio Project
