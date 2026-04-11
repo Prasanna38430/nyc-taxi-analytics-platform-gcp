@@ -7,10 +7,7 @@ resource "google_service_account" "pipeline_sa" {
   labels = local.common_labels
 }
 
-# ====================================
-# IAM ROLES
-# ====================================
-
+# IAM roles
 # BigQuery Data Editor
 resource "google_project_iam_member" "bq_data_editor" {
   project = var.gcp_project_id
