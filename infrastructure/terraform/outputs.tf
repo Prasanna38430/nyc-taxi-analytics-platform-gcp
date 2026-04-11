@@ -1,6 +1,4 @@
-# ====================================
-# GCS OUTPUTS
-# ====================================
+# GCS outputs
 output "gcs_bucket_name" {
   description = "GCS bucket name for all data"
   value       = google_storage_bucket.data_bucket.name
@@ -11,9 +9,7 @@ output "gcs_bucket_url" {
   value       = "gs://${google_storage_bucket.data_bucket.name}/"
 }
 
-# ====================================
-# BIGQUERY OUTPUTS
-# ====================================
+# BigQuery outputs
 output "bronze_dataset_id" {
   description = "Bronze dataset ID"
   value       = google_bigquery_dataset.bronze.dataset_id
@@ -34,9 +30,7 @@ output "ml_dataset_id" {
   value       = google_bigquery_dataset.ml.dataset_id
 }
 
-# ====================================
-# SERVICE ACCOUNT OUTPUTS
-# ====================================
+# Service account outputs
 output "service_account_email" {
   description = "Pipeline service account email"
   value       = google_service_account.pipeline_sa.email
