@@ -26,18 +26,6 @@ resource "google_bigquery_table" "bronze_raw_trips" {
   dataset_id = google_bigquery_dataset.bronze.dataset_id
   table_id   = "raw_trips"
 
-  external_data_config {
-    autodetect    = false
-    source_format = "CSV"
-    source_uris   = ["gs://${google_storage_bucket.data_bucket.name}/raw/taxi_trips/*.csv"]
-
-    csv_options {
-      skip_leading_rows = 1
-      allow_quoted_newlines = true
-      allow_jagged_rows = false
-    }
-  }
-
   schema = jsonencode([
     { name = "id", type = "STRING", mode = "NULLABLE" },
     { name = "vendor_id", type = "INTEGER", mode = "NULLABLE" },
