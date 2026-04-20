@@ -162,10 +162,6 @@ nyc-taxi-analytics-platform-gcp/
 │       └── ML_Insights_Dashboard.png
 ├── docs/                        # Documentation
 │   └── architecture.md
-├── monitoring/                  # Phase 10: Cloud Monitoring configs
-│   └── (Empty - Monitoring setup in infrastructure/terraform/)
-├── vertex_ai/                   # Future: Vertex AI ML Models
-│   └── (Empty - Reserved for advanced ML models)
 ├── .github/                     # Phase 11: CI/CD Pipeline
 │   └── workflows/
 │       ├── terraform-validate.yml
