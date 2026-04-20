@@ -385,5 +385,5 @@ No manual setup needed - all automated via Terraform!
 ---
 
 **Created**: April 11, 2026
-**Project**: NYC Taxi Analytics - Group 12
+**Project**: NYC Taxi Analytics
 **Status**: [OK] Complete - Documentation & Reference Blueprint

@@ -470,4 +470,4 @@ This project is for educational and portfolio demonstration purposes.
 
 ## Author
 
-**Group 12** - Big Data Analytics Course
+NYC Taxi Analytics Platform

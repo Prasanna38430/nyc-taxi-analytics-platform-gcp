@@ -493,5 +493,5 @@ gcloud logging read \
 ---
 
 **Created:** April 11, 2026
-**Project:** NYC Taxi Analytics - Group 12
+**Project:** NYC Taxi Analytics
 **Deployment Time:** ~5 minutes (CLI) | ~30 minutes (Console)

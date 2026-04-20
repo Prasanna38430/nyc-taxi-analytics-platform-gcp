@@ -163,5 +163,5 @@ Professional Power BI dashboard for NYC Taxi Trip Analytics built on BigQuery Go
 5. Explore the 3-page dashboard with interactive visuals and filters
 
 ## Author
-Group 12 - NYC Taxi Analytics Portfolio Project
+NYC Taxi Analytics Portfolio Project
 Date: April 11, 2026
