@@ -173,9 +173,6 @@ nyc-taxi-analytics-platform-gcp/
 ├── tests/                       # Phase 11: Unit & integration tests
 │   ├── test_etl.py              # 28 comprehensive unit tests
 │   └── requirements.txt          # Test dependencies
-├── Executive_Summary_Dashboard.png          # Power BI: Executive summary view
-├── Detailed_Analysis_DashBoard.png          # Power BI: Detailed analysis view
-└── ML_Insights_Dashboard.png                # Power BI: ML predictions view
 ```
 
 ## Pipeline Metrics
