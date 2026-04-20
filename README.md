@@ -90,6 +90,7 @@ An end-to-end data engineering pipeline built on **Google Cloud Platform**, impl
 | **Visualization** | Power BI | Business intelligence dashboards (3-page) |
 | **IaC** | Terraform | Infrastructure provisioning |
 | **Monitoring** | Cloud Monitoring | Observability & alerting |
+| **CI/CD Pipeline** | GitHub Actions | Automated testing, validation, deployment |
 
 ## Project Structure
 
@@ -156,8 +157,16 @@ nyc-taxi-analytics-platform-gcp/
 │       └── ML_Insights_Dashboard.png
 ├── docs/                        # Documentation
 │   └── architecture.md
-└── tests/                       # Unit & integration tests
-    └── test_etl.py
+├── .github/                     # Phase 11: CI/CD Pipeline
+│   └── workflows/
+│       ├── terraform-validate.yml
+│       ├── python-test.yml
+│       ├── sql-validate.yml
+│       ├── terraform-deploy.yml
+│       └── pr-checks.yml
+└── tests/                       # Phase 11: Unit & integration tests
+    ├── test_etl.py             # 27 comprehensive unit tests
+    └── requirements.txt         # Test dependencies
 ```
 
 ## Pipeline Metrics
@@ -368,6 +377,77 @@ infrastructure/terraform/
 ```
 
 See [infrastructure/terraform/phase_10_monitoring_alerting.md](infrastructure/terraform/phase_10_monitoring_alerting.md) for complete monitoring guide.
+
+## Phase 11: CI/CD Pipeline & Automated Testing
+
+**Status**: ✅ Complete
+
+Comprehensive GitHub Actions CI/CD pipeline automating testing, validation, and deployment:
+
+### GitHub Actions Workflows (5 Total)
+
+| Workflow | Trigger | Purpose | Jobs |
+|----------|---------|---------|------|
+| `terraform-validate.yml` | Push/PR to main/develop | Terraform syntax, format, linting | Validate, Plan (on PR) |
+| `python-test.yml` | Push/PR when Python changes | Code quality, unit tests, security | Lint, Unit Tests, Security |
+| `sql-validate.yml` | Push/PR when SQL changes | SQL syntax, BigQuery dry-run | SQL Lint, BigQuery Dry-Run |
+| `terraform-deploy.yml` | Manual workflow_dispatch | Plan and apply Terraform changes | Plan, Approval gate, Apply, Post-deploy tests |
+| `pr-checks.yml` | Pull request on main/develop | Code formatting, dependencies, docs | Formatting, Dependencies, Documentation, Summary |
+
+### Key Features
+
+- **Automated Validation**: All code changes automatically tested before merge
+- **Terraform Plan Preview**: PR comments showing planned infrastructure changes
+- **Unit Testing**: 27 comprehensive unit tests covering:
+  - Data validation rules (NYC bounds, duration, passenger count)
+  - Data quality calculations (99.34% expected quality rate)
+  - ETL pipeline logic (Bronze→Silver→Gold transformations)
+  - Schema validation (fact tables, dimension tables)
+  - Monitoring metrics (success rate, error rate, processing rate)
+
+- **Code Quality Checks**:
+  - Python linting (flake8, pylint)
+  - Code formatting (black, isort)
+  - Security scanning (bandit, safety)
+  - SQL linting (sqlfluff)
+  
+- **Manual Approval Gates**: Staging and prod deployments require approval
+- **Cost Optimization**: Dry-run tests avoid unnecessary resource creation
+- **Audit Trail**: Complete deployment history in Actions tab
+
+### CI/CD Pipeline Flow
+
+**On Pull Request** → Terraform Validate + Python Test + SQL Validate + PR Checks → Comment Results
+
+**On Merge to Main** → Full Test Suite → Ready for Deployment
+
+**Manual Deployment** → Plan → Review → Approval → Apply → Post-Deploy Verification
+
+### Running Locally
+
+```bash
+# Install test dependencies
+pip install -r tests/requirements.txt
+
+# Run all tests
+pytest tests/ -v
+
+# Terraform validation
+terraform -chdir=infrastructure/terraform fmt -check
+terraform -chdir=infrastructure/terraform validate
+
+# SQL validation
+sqlfluff lint bigquery/ --dialect bigquery
+```
+
+### GitHub Secrets Required
+
+```
+GCP_CREDENTIALS: GCP service account JSON key
+  (roles: editor, bigquery.admin, storage.admin)
+```
+
+See [infrastructure/terraform/phase_11_cicd_pipeline.md](infrastructure/terraform/phase_11_cicd_pipeline.md) for complete CI/CD documentation.
 
 ## Data Quality Rules Applied
 
