@@ -106,28 +106,27 @@ nyc-taxi-analytics-platform-gcp/
 ├── infrastructure/              # Phase 1-2, 9-10: Setup & IaC
 │   ├── 01_setup_project.sh
 │   ├── 02_setup_storage.sh
-│   ├── terraform/               # Phase 9: Infrastructure as Code
-│   │   ├── Core Files
-│   │   │   ├── main.tf
-│   │   │   ├── providers.tf
-│   │   │   ├── variables.tf
-│   │   │   ├── apis.tf
-│   │   │   ├── storage.tf
-│   │   │   ├── iam.tf
-│   │   │   ├── bigquery.tf
-│   │   │   ├── firewall.tf
-│   │   │   ├── outputs.tf
-│   │   │   ├── terraform.tfvars
-│   │   │   └── README.md
-│   │   └── Phase 10: Monitoring & Alerting
-│   │       ├── notification_channels.tf
-│   │       ├── alert_policies.tf
-│   │       ├── custom_metrics.tf
-│   │       ├── log_based_metrics.tf
-│   │       ├── metric_based_alerts.tf
-│   │       ├── monitoring_dashboard.tf
-│   │       ├── phase_10_monitoring_alerting.md
-│   │       └── DEPLOYMENT_INSTRUCTIONS.md
+│   └── terraform/               # Phase 9-10: Infrastructure & Monitoring as Code
+│       ├── main.tf              # Core infrastructure
+│       ├── providers.tf
+│       ├── variables.tf
+│       ├── outputs.tf
+│       ├── terraform.tfvars
+│       ├── apis.tf
+│       ├── storage.tf
+│       ├── iam.tf
+│       ├── bigquery.tf
+│       ├── firewall.tf
+│       ├── notification_channels.tf   # Phase 10: Monitoring
+│       ├── alert_policies.tf
+│       ├── custom_metrics.tf
+│       ├── log_based_metrics.tf
+│       ├── metric_based_alerts.tf
+│       ├── monitoring_dashboard.tf
+│       ├── README.md
+│       ├── DEPLOYMENT_INSTRUCTIONS.md
+│       ├── phase_10_monitoring_alerting.md
+│       └── phase_11_cicd_pipeline.md
 ├── bigquery/                    # Phases 3-7: BigQuery schemas & ML
 │   ├── bronze/                  # Phase 3: External table
 │   │   └── create_external_table.sql
@@ -145,6 +144,8 @@ nyc-taxi-analytics-platform-gcp/
 ├── dataproc/                    # Phase 4: Spark ETL
 │   └── spark_bronze_to_silver.py
 ├── airflow/                     # Phase 6: Orchestration
+│   ├── README.md
+│   ├── requirements.txt
 │   └── dags/
 │       ├── nyc_taxi_daily_pipeline.py
 │       ├── nyc_taxi_etl_pipeline.py
@@ -172,9 +173,9 @@ nyc-taxi-analytics-platform-gcp/
 ├── tests/                       # Phase 11: Unit & integration tests
 │   ├── test_etl.py              # 28 comprehensive unit tests
 │   └── requirements.txt          # Test dependencies
-├── Executive_Summary_Dashboard.png          # Power BI: Executive view
-├── Detailed_Analysis_DashBoard.png          # Power BI: Analysis details
-└── ML_Insights_Dashboard.png                # Power BI: ML predictions
+├── Executive_Summary_Dashboard.png          # Power BI: Executive summary view
+├── Detailed_Analysis_DashBoard.png          # Power BI: Detailed analysis view
+└── ML_Insights_Dashboard.png                # Power BI: ML predictions view
 ```
 
 ## Pipeline Metrics
