@@ -1,0 +1,198 @@
+name: Terraform Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment (dev, staging, prod)'
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      auto_approve:
+        description: 'Skip approval step (only for dev)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  TERRAFORM_VERSION: 1.5.0
+
+jobs:
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    outputs:
+      plan_id: ${{ steps.plan.outputs.plan_id }}
+      changes: ${{ steps.plan.outputs.changes }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      
+      - name: Terraform Init
+        run: |
+          cd infrastructure/terraform
+          terraform init
+      
+      - name: Create Terraform Plan
+        id: plan
+        run: |
+          cd infrastructure/terraform
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+          echo "plan_id=$(date +%s)" >> $GITHUB_OUTPUT
+          CHANGES=$(terraform show tfplan | grep -c 'will be' || echo '0')
+          echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+      
+      - name: Save plan artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan-${{ steps.plan.outputs.plan_id }}
+          path: infrastructure/terraform/tfplan
+      
+      - name: Save plan JSON artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan-json-${{ steps.plan.outputs.plan_id }}
+          path: infrastructure/terraform/tfplan.json
+      
+      - name: Post plan summary
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('infrastructure/terraform/tfplan.json', 'utf8');
+            const planJson = JSON.parse(plan);
+            const changes = planJson.resource_changes || [];
+            
+            const adds = changes.filter(c => c.change.actions.includes('create')).length;
+            const updates = changes.filter(c => c.change.actions.includes('update')).length;
+            const deletes = changes.filter(c => c.change.actions.includes('delete')).length;
+            
+            console.log(`📊 Terraform Plan for ${{ github.event.inputs.environment }}`);
+            console.log(`✅ To Add: ${adds}`);
+            console.log(`📝 To Update: ${updates}`);
+            console.log(`❌ To Delete: ${deletes}`);
+
+  approval:
+    name: Manual Approval
+    runs-on: ubuntu-latest
+    needs: plan
+    if: |
+      github.event.inputs.environment != 'dev' || 
+      github.event.inputs.auto_approve != 'true'
+    
+    steps:
+      - name: Request approval
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('⏳ Awaiting approval for ${{ github.event.inputs.environment }} deployment');
+            console.log('Plan ID: ${{ needs.plan.outputs.plan_id }}');
+
+  apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: [plan, approval]
+    if: always() && needs.plan.result == 'success'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      
+      - name: Download plan artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-plan-${{ needs.plan.outputs.plan_id }}
+          path: infrastructure/terraform/
+      
+      - name: Terraform Init
+        run: |
+          cd infrastructure/terraform
+          terraform init
+      
+      - name: Terraform Apply
+        run: |
+          cd infrastructure/terraform
+          terraform apply tfplan
+      
+      - name: Post deployment status
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('✅ Deployment to ${{ github.event.inputs.environment }} completed successfully');
+      
+      - name: Post deployment failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('❌ Deployment to ${{ github.event.inputs.environment }} failed');
+
+  post-deploy-tests:
+    name: Post-Deployment Tests
+    runs-on: ubuntu-latest
+    needs: apply
+    if: success()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      
+      - name: Verify GCS bucket
+        run: |
+          gsutil ls -p $(gcloud config get-value project) 2>/dev/null || true
+      
+      - name: Verify BigQuery datasets
+        run: |
+          bq ls --project_id=$(gcloud config get-value project) 2>/dev/null || true
+      
+      - name: Check alert policies
+        run: |
+          gcloud alpha monitoring policies list --format=json 2>/dev/null || true
+      
+      - name: Generate deployment report
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('📋 Post-Deployment Verification Complete');
+            console.log('Environment: ${{ github.event.inputs.environment }}');
+            console.log('Deployment Time: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}');

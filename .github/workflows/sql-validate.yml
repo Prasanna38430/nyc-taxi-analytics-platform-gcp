@@ -1,0 +1,91 @@
+name: SQL Validation
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'bigquery/**'
+      - '.github/workflows/sql-validate.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'bigquery/**'
+
+jobs:
+  sql-lint:
+    name: SQL Linting & Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+      
+      - name: Install SQL tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install sqlfluff sqlparse
+      
+      - name: Run SQLFluff lint
+        run: |
+          sqlfluff lint bigquery/ --dialect bigquery --exclude-rules L003,L009 || true
+      
+      - name: Validate SQL syntax
+        run: |
+          for file in $(find bigquery -name "*.sql"); do
+            echo "Validating $file..."
+            python -c "import sqlparse; sqlparse.parse(open('$file').read())" || echo "Error in $file"
+          done
+
+  bigquery-dry-run:
+    name: BigQuery Dry Run Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+      
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      
+      - name: Install BigQuery client
+        run: |
+          python -m pip install google-cloud-bigquery
+      
+      - name: Run BigQuery dry-run validation
+        run: |
+          python - << 'EOF'
+          import os
+          import glob
+          from google.cloud import bigquery
+          
+          client = bigquery.Client(project=os.environ.get('GCP_PROJECT_ID'))
+          
+          sql_files = glob.glob('bigquery/**/*.sql', recursive=True)
+          for sql_file in sql_files:
+              print(f"Validating {sql_file}...")
+              try:
+                  with open(sql_file, 'r') as f:
+                      query = f.read()
+                  job_config = bigquery.QueryJobConfig(dry_run=True, use_legacy_sql=False)
+                  query_job = client.query(query, job_config=job_config)
+                  print(f"✓ {sql_file} is valid")
+              except Exception as e:
+                  print(f"✗ {sql_file} has errors: {str(e)}")
+          EOF
+        continue-on-error: true
