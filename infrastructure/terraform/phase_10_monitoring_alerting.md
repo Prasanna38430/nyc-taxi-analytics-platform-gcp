@@ -177,7 +177,7 @@ Real-time dashboard displays:
 
 **Alert Message Example:**
 ```
-🚨 CRITICAL: Spark Job Failed
+[ALERT] CRITICAL: Spark Job Failed
 Component: Dataproc Cluster
 Timestamp: 2026-04-11 14:30:00
 Details: Job execution failed with OutOfMemory error
