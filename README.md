@@ -182,7 +182,7 @@ nyc-taxi-analytics-platform-gcp/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/nyc-taxi-analytics-platform-gcp.git
+git clone https://github.com/Prasanna38430/nyc-taxi-analytics-platform-gcp.git
 cd nyc-taxi-analytics-platform-gcp
 
 # 2. Set GCP project
