@@ -85,10 +85,10 @@ jobs:
             const updates = changes.filter(c => c.change.actions.includes('update')).length;
             const deletes = changes.filter(c => c.change.actions.includes('delete')).length;
             
-            console.log(`📊 Terraform Plan for ${{ github.event.inputs.environment }}`);
-            console.log(`✅ To Add: ${adds}`);
-            console.log(`📝 To Update: ${updates}`);
-            console.log(`❌ To Delete: ${deletes}`);
+            console.log(`Terraform Plan for ${{ github.event.inputs.environment }}`);
+            console.log(`To Add: ${adds}`);
+            console.log(`To Update: ${updates}`);
+            console.log(`To Delete: ${deletes}`);
 
   approval:
     name: Manual Approval
@@ -103,7 +103,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log('⏳ Awaiting approval for ${{ github.event.inputs.environment }} deployment');
+            console.log('Awaiting approval for ${{ github.event.inputs.environment }} deployment');
             console.log('Plan ID: ${{ needs.plan.outputs.plan_id }}');
 
   apply:
@@ -150,14 +150,14 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log('✅ Deployment to ${{ github.event.inputs.environment }} completed successfully');
+            console.log('Deployment to ${{ github.event.inputs.environment }} completed successfully');
       
       - name: Post deployment failure
         if: failure()
         uses: actions/github-script@v6
         with:
           script: |
-            console.log('❌ Deployment to ${{ github.event.inputs.environment }} failed');
+            console.log('Deployment to ${{ github.event.inputs.environment }} failed');
 
   post-deploy-tests:
     name: Post-Deployment Tests
@@ -193,6 +193,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log('📋 Post-Deployment Verification Complete');
+            console.log('Post-Deployment Verification Complete');
             console.log('Environment: ${{ github.event.inputs.environment }}');
             console.log('Deployment Time: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}');

@@ -84,8 +84,8 @@ jobs:
                       query = f.read()
                   job_config = bigquery.QueryJobConfig(dry_run=True, use_legacy_sql=False)
                   query_job = client.query(query, job_config=job_config)
-                  print(f"✓ {sql_file} is valid")
+                  print(f"[OK] {sql_file} is valid")
               except Exception as e:
-                  print(f"✗ {sql_file} has errors: {str(e)}")
+                  print(f"[ERROR] {sql_file} has errors: {str(e)}")
           EOF
         continue-on-error: true

@@ -79,10 +79,10 @@ Apply complete! Resources created: 28
 ```
 
 **This creates:**
-- ✅ 2 notification channels (email + Teams)
-- ✅ 14 alert policies
-- ✅ 7 custom metrics
-- ✅ 1 monitoring dashboard
+- [OK] 2 notification channels (email + Teams)
+- [OK] 14 alert policies
+- [OK] 7 custom metrics
+- [OK] 1 monitoring dashboard
 
 ---
 
@@ -267,37 +267,37 @@ gcloud alpha monitoring policies create --policy-from-file=alert_policy.json
 
 After deployment, verify everything works:
 
-### ✅ Notification Channels
+### [OK] Notification Channels
 ```bash
 # Should show 2 channels
 gcloud alpha monitoring channels list | grep "NYC Taxi"
 ```
 
-### ✅ Alert Policies
+### [OK] Alert Policies
 ```bash
 # Should show 14 policies
 gcloud alpha monitoring policies list | grep "NYC Taxi"
 ```
 
-### ✅ Custom Metrics
+### [OK] Custom Metrics
 ```bash
 # Check if custom metrics exist (may take 5 minutes)
 gcloud logging metrics list | grep "rows_processed\|etl_duration"
 ```
 
-### ✅ Dashboard
+### [OK] Dashboard
 ```bash
 # Should show dashboard
 gcloud monitoring dashboards list | grep "Pipeline Dashboard"
 ```
 
-### ✅ Email Notification
+### [OK] Email Notification
 
 You should receive a **verification email** from Google Cloud.
 
 **Action:** Click link to verify email address
 
-### ✅ MS Teams Webhook
+### [OK] MS Teams Webhook
 
 Test by manually triggering a log entry:
 ```bash
@@ -455,10 +455,10 @@ terraform destroy -target=google_monitoring_alert_policy.dataproc_creation_failu
 
 ## NEXT STEPS
 
-1. ✅ Verify all alerts are working
-2. ✅ Run Phase 6 (orchestration) to test monitoring
-3. ✅ Check alerts in email + Teams during execution
-4. ✅ Move to Phase 11 (Testing & CI/CD)
+1. [OK] Verify all alerts are working
+2. [OK] Run Phase 6 (orchestration) to test monitoring
+3. [OK] Check alerts in email + Teams during execution
+4. [OK] Move to Phase 11 (Testing & CI/CD)
 
 ---
 

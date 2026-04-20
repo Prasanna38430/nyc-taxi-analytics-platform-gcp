@@ -231,48 +231,48 @@ bq query --use_legacy_sql=false --dry_run < bigquery/gold/fact_trips.sql
 
 **Data Validation Tests** (27 tests):
 ```
-✓ NYC bounds validation (lat/long within NYC)
-✓ Trip duration validation (1 min - 24 hours)
-✓ Passenger count validation (1-9 passengers)
-✓ Fare amount validation (positive)
-✓ Trip distance validation (positive)
-✓ Coordinates non-zero validation
+[OK] NYC bounds validation (lat/long within NYC)
+[OK] Trip duration validation (1 min - 24 hours)
+[OK] Passenger count validation (1-9 passengers)
+[OK] Fare amount validation (positive)
+[OK] Trip distance validation (positive)
+[OK] Coordinates non-zero validation
 ```
 
 **Data Quality Tests**:
 ```
-✓ Quality rate calculation (99.34% expected)
-✓ Null value detection
-✓ Duplicate detection
+[OK] Quality rate calculation (99.34% expected)
+[OK] Null value detection
+[OK] Duplicate detection
 ```
 
 **ETL Pipeline Tests**:
 ```
-✓ Airflow variables availability
-✓ BigQuery partition schema validation
-✓ Bronze→Silver transformation
-✓ Gold layer aggregation
+[OK] Airflow variables availability
+[OK] BigQuery partition schema validation
+[OK] Bronze->Silver transformation
+[OK] Gold layer aggregation
 ```
 
 **Schema Tests**:
 ```
-✓ Fact table schema (fact_trips)
-✓ Dimension table schemas (vendor, location, datetime)
+[OK] Fact table schema (fact_trips)
+[OK] Dimension table schemas (vendor, location, datetime)
 ```
 
 **Monitoring Tests**:
 ```
-✓ Pipeline success rate calculation
-✓ Error rate threshold checking
-✓ Processing rate metrics
+[OK] Pipeline success rate calculation
+[OK] Error rate threshold checking
+[OK] Processing rate metrics
 ```
 
 **Integration Tests**:
 ```
-✓ BigQuery client initialization
-✓ Dataset naming conventions
-✓ Terraform file structure
-✓ Configuration validation
+[OK] BigQuery client initialization
+[OK] Dataset naming conventions
+[OK] Terraform file structure
+[OK] Configuration validation
 ```
 
 ---
@@ -283,13 +283,13 @@ bq query --use_legacy_sql=false --dry_run < bigquery/gold/fact_trips.sql
 
 ```
 PR created/updated
-    ↓
+    |
 [Parallel]
 ├─ Terraform Validate (syntax, fmt, lint)
 ├─ Python Test (lint, unit tests, security)
 ├─ SQL Validate (sqlfluff, syntax)
 ├─ PR Checks (formatting, deps, docs)
-    ↓
+    |
 [If all pass]
 ├─ Post summary comment
 └─ Allow merge
@@ -302,15 +302,15 @@ PR created/updated
 
 ```
 Code merged to main
-    ↓
+    |
 Terraform Validate (full run)
-    ↓
+    |
 Python Test (full run)
-    ↓
+    |
 SQL Validate (full run)
-    ↓
+    |
 All tests pass
-    ↓
+    |
 Ready for deployment
 ```
 
@@ -318,17 +318,17 @@ Ready for deployment
 
 ```
 Trigger terraform-deploy.yml manually
-    ↓
+    |
 Select environment (dev/staging/prod)
-    ↓
+    |
 Plan phase:
 ├─ Terraform init
 ├─ Terraform plan
 └─ Save plan artifact
-    ↓
+    |
 [If staging/prod]
 └─ Await manual approval
-    ↓
+    |
 Apply phase:
 ├─ Download plan
 ├─ Terraform apply
@@ -466,11 +466,11 @@ phase_11_cicd_pipeline.md           # ✓ This file
 
 Phase 11 transforms the NYC Taxi Analytics Platform into a production-grade system with:
 
-✅ **Automated Validation**: All code changes automatically tested
-✅ **Infrastructure as Code**: Terraform changes reviewed and applied safely
-✅ **Continuous Testing**: Unit tests, linting, security scanning
-✅ **Controlled Deployments**: Manual approval gates for prod
-✅ **Quality Assurance**: 27+ unit tests covering core functionality
-✅ **Documentation**: Self-documenting through code comments
+[OK] **Automated Validation**: All code changes automatically tested
+[OK] **Infrastructure as Code**: Terraform changes reviewed and applied safely
+[OK] **Continuous Testing**: Unit tests, linting, security scanning
+[OK] **Controlled Deployments**: Manual approval gates for prod
+[OK] **Quality Assurance**: 27+ unit tests covering core functionality
+[OK] **Documentation**: Self-documenting through code comments
 
 The platform is now ready for team collaboration, regular updates, and production operation with full audit trails and rollback capabilities.

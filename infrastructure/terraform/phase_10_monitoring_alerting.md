@@ -3,15 +3,15 @@
 ## Overview
 
 Comprehensive monitoring and alerting system for NYC Taxi Analytics pipeline. Automatically detects failures, performance degradation, and data quality issues across:
-- ✅ Dataproc clusters (Spark jobs)
-- ✅ BigQuery transformations
-- ✅ Cloud Functions (event triggers)
-- ✅ GCS storage operations
-- ✅ Custom ETL metrics
+- [OK] Dataproc clusters (Spark jobs)
+- [OK] BigQuery transformations
+- [OK] Cloud Functions (event triggers)
+- [OK] GCS storage operations
+- [OK] Custom ETL metrics
 
 **Alert Destinations:**
-- 📧 Email: prasannakumaradabala20@gmail.com
-- 🔵 MS Teams: Webhook integration
+- Email: prasannakumaradabala20@gmail.com
+- MS Teams: Webhook integration
 
 ---
 
@@ -334,7 +334,7 @@ resource "google_monitoring_notification_channel" "new_channel" {
 
 ## Monitoring Best Practices
 
-✅ **DO:**
+[OK] **DO:**
 - Review dashboard daily during pipeline runs
 - Acknowledge alerts in Teams when received
 - Track recurring alert patterns
@@ -342,7 +342,7 @@ resource "google_monitoring_notification_channel" "new_channel" {
 - Archive old notifications for audit
 - Test alerts monthly
 
-❌ **DON'T:**
+[NOT OK] **DON'T:**
 - Ignore "WARNING" alerts (early sign of problems)
 - Set thresholds too high (miss real issues)
 - Leave notifications unchecked
@@ -405,14 +405,14 @@ terraform apply
 ## Monitoring Cost Implications
 
 ### What's Free
-- ✅ Cloud Logging (first 50 GB/month)
-- ✅ Basic metric ingestion
-- ✅ Alert policies (up to 5 free)
+- [OK] Cloud Logging (first 50 GB/month)
+- [OK] Basic metric ingestion
+- [OK] Alert policies (up to 5 free)
 
 ### What Costs
-- ❌ Log analysis beyond 50 GB
-- ❌ Custom metrics (ingestion)
-- ❌ Advanced Monitoring features
+- [NOT OK] Log analysis beyond 50 GB
+- [NOT OK] Custom metrics (ingestion)
+- [NOT OK] Advanced Monitoring features
 
 **Estimated Monthly Cost:** $10-50 (depending on log volume)
 
@@ -463,4 +463,4 @@ Phase 6: Cloud Composer DAG runs
 
 **Created:** April 11, 2026
 **Project:** NYC Taxi Analytics - Group 12
-**Status:** ✅ Complete - Ready for Deployment
+**Status:** [OK] Complete - Ready for Deployment
