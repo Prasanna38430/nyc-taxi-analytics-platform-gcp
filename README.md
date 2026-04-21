@@ -250,11 +250,34 @@ Automated orchestration of the complete Bronze → Silver → Gold data pipeline
 | Component | Configuration |
 |-----------|---------------|
 | **DAG Name** | `nyc_taxi_etl_pipeline` |
-| **Trigger Mode** | Manual (on-demand execution) |
+| **Trigger Mode** | Event-driven (GCS upload) + Manual (on-demand) |
+| **Event Trigger** | Cloud Function listens to `gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/` uploads |
 | **Cluster Type** | Ephemeral Dataproc (auto spin-up/down) |
 | **Machine Type** | n1-standard-2 (1 master + 2 workers) |
 | **Region** | us-central1 (same as BigQuery, GCS) |
 | **Spark Configuration** | 4GB executor memory, 2GB driver memory |
+
+### Automatic Trigger via Cloud Function
+
+When a new taxi data file is uploaded to the GCS bucket, the Cloud Function automatically detects the event and triggers the DAG without manual intervention:
+
+```
+User uploads train.csv
+       ↓
+gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/
+       ↓
+Cloud Function (event trigger)
+       ↓
+Airflow DAG triggered automatically
+       ↓
+Pipeline runs: Bronze → Silver → Gold
+```
+
+**How it works:**
+1. Upload file to: `gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/train.csv`
+2. Cloud Function detects the upload event
+3. Function calls Airflow API to trigger `nyc_taxi_etl_pipeline` DAG
+4. Pipeline automatically processes the new data
 
 ### Pipeline Tasks (Sequential Flow)
 
@@ -284,14 +307,23 @@ Automated orchestration of the complete Bronze → Silver → Gold data pipeline
 
 ### How to Run
 
-**Via Airflow Web UI:**
+**Option 1: Automatic (Event-Triggered)**
+1. Upload a new CSV file to the GCS bucket:
+```bash
+gsutil cp train.csv gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/
+```
+2. Cloud Function automatically detects the upload
+3. DAG triggers and runs pipeline automatically
+4. Monitor in Airflow UI
+
+**Option 2: Manual Trigger via Airflow Web UI**
 1. Open Cloud Composer Airflow UI (Cloud Composer → Environment → Airflow webserver)
 2. Search for `nyc_taxi_etl_pipeline`
 3. Click **"Trigger DAG"** button
 4. Monitor execution in **Graph View**
 5. View task logs and Spark output as pipeline runs
 
-**Via CLI:**
+**Option 3: Manual Trigger via CLI**
 ```bash
 gcloud composer environments run nyc-taxi-composer \
     --location us-central1 \
