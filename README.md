@@ -241,7 +241,7 @@ Automated orchestration of the complete Bronze → Silver → Gold data pipeline
 
 ### Pipeline Visualization
 
-![NYC Taxi Orchestration Pipeline](airflow/nyc-taxi-orchetrstion-pipeline.png)
+![NYC Taxi Orchestration Pipeline](airflow/phase_6_orchestration_pipeline.png)
 
 *The Airflow DAG showing the complete ETL workflow with task dependencies and execution flow*
 
