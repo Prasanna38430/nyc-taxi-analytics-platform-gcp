@@ -231,6 +231,108 @@ gsutil cp data/train.csv gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/
 - **Infrastructure as Code**: Reproducible deployments with Terraform
 - **Monitoring & Alerting**: Proactive issue detection
 
+## Phase 6: Orchestration (Cloud Composer)
+
+**Status**: [OK] Complete - Batch ETL Pipeline Running via Airflow
+
+### Airflow DAG: NYC Taxi ETL Pipeline
+
+Automated orchestration of the complete Bronze → Silver → Gold data pipeline using **Google Cloud Composer** (managed Apache Airflow):
+
+### Pipeline Visualization
+
+![NYC Taxi Orchestration Pipeline](airflow/nyc-taxi-orchetrstion-pipeline.png)
+
+*The Airflow DAG showing the complete ETL workflow with task dependencies and execution flow*
+
+### DAG Configuration
+
+| Component | Configuration |
+|-----------|---------------|
+| **DAG Name** | `nyc_taxi_etl_pipeline` |
+| **Trigger Mode** | Manual (on-demand execution) |
+| **Cluster Type** | Ephemeral Dataproc (auto spin-up/down) |
+| **Machine Type** | n1-standard-2 (1 master + 2 workers) |
+| **Region** | us-central1 (same as BigQuery, GCS) |
+| **Spark Configuration** | 4GB executor memory, 2GB driver memory |
+
+### Pipeline Tasks (Sequential Flow)
+
+```
+1. log_pipeline_start
+   │
+2. check_source_data
+   │
+3. create_dataproc_cluster
+   │
+4. run_bronze_to_silver_etl (Spark Job)
+   │
+5. delete_dataproc_cluster
+   │
+6. refresh_gold_aggregations ──┐
+   │                           ├─→ 7. log_pipeline_complete
+7. prepare_ml_features ────────┘
+```
+
+### Key Features
+
+- **Ephemeral Cluster**: Dataproc cluster created on-demand, deleted after job completes (cost optimization)
+- **Idempotent Writes**: Spark job uses MERGE statement for exactly-once semantics (no duplicates)
+- **Parallel Processing**: Gold layer refresh and ML feature preparation run in parallel
+- **Error Handling**: Automatic retry on failure; cluster cleanup guaranteed even on failure
+- **Logging**: Full execution logs in Cloud Logging, visible in Airflow UI
+
+### How to Run
+
+**Via Airflow Web UI:**
+1. Open Cloud Composer Airflow UI (Cloud Composer → Environment → Airflow webserver)
+2. Search for `nyc_taxi_etl_pipeline`
+3. Click **"Trigger DAG"** button
+4. Monitor execution in **Graph View**
+5. View task logs and Spark output as pipeline runs
+
+**Via CLI:**
+```bash
+gcloud composer environments run nyc-taxi-composer \
+    --location us-central1 \
+    dags trigger nyc_taxi_etl_pipeline
+```
+
+### Monitoring & Troubleshooting
+
+**Pipeline Status:**
+- Gray = Not started
+- Yellow = Running
+- Green = Success ✅
+- Red = Failed ❌
+
+**View Task Logs:**
+1. Click on task (box in graph)
+2. Click "Log" tab
+3. See Spark job output, errors, and metrics
+
+**Check Dataproc Cluster:**
+```bash
+gcloud dataproc clusters list --region=us-central1
+```
+
+**Verify Data in BigQuery:**
+```bash
+# Check Silver layer row count
+bq query --nouse_legacy_sql '
+SELECT COUNT(*) as total_rows 
+FROM `nyc-taxi-analytics-g12.nyc_taxi_silver.trips_enriched`
+'
+
+# Check Gold layer aggregations
+bq query --nouse_legacy_sql '
+SELECT * FROM `nyc-taxi-analytics-g12.nyc_taxi_gold.agg_daily_summary` 
+LIMIT 5
+'
+```
+
+See [airflow/README.md](airflow/README.md) and [docs/ORCHESTRATION_IMPLEMENTATION_GUIDE.md](docs/ORCHESTRATION_IMPLEMENTATION_GUIDE.md) for complete orchestration guides.
+
 ## Phase 8: Power BI Analytics Dashboard
 
 **Status**: [OK] Complete
