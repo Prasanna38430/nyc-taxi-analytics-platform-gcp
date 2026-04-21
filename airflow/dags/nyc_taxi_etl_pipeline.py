@@ -26,7 +26,7 @@ import logging
 # Configuration
 
 PROJECT_ID = "nyc-taxi-analytics-g12"
-REGION = "us-east1"
+REGION = "us-central1"
 BUCKET_NAME = "nyc-taxi-data-bucket-g12"
 SPARK_SCRIPT_PATH = f"gs://{BUCKET_NAME}/scripts/spark/spark_bronze_to_silver.py"
 
@@ -37,13 +37,13 @@ CLUSTER_CONFIG = {
     "config_bucket": "nyc-taxi-data-bucket-g12",
     "master_config": {
         "num_instances": 1,
-        "machine_type_uri": "n1-standard-2",
-        "disk_config": {"boot_disk_size_gb": 100},
+        "machine_type_uri": "n1-standard-1",  # Reduced from n1-standard-2
+        "disk_config": {"boot_disk_size_gb": 50},  # Reduced from 100
     },
     "worker_config": {
-        "num_instances": 2,
-        "machine_type_uri": "n1-standard-2",
-        "disk_config": {"boot_disk_size_gb": 100},
+        "num_instances": 2,  # Minimum required by Dataproc
+        "machine_type_uri": "n1-standard-1",  # Reduced from n1-standard-2
+        "disk_config": {"boot_disk_size_gb": 50},  # Reduced from 100
     },
     "software_config": {
         "image_version": "2.1-debian11",
