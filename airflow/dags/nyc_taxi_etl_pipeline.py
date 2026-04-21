@@ -37,13 +37,13 @@ CLUSTER_CONFIG = {
     "config_bucket": "nyc-taxi-data-bucket-g12",
     "master_config": {
         "num_instances": 1,
-        "machine_type_uri": "n1-standard-1",  # Reduced from n1-standard-2
-        "disk_config": {"boot_disk_size_gb": 50},  # Reduced from 100
+        "machine_type_uri": "n1-standard-2",
+        "disk_config": {"boot_disk_size_gb": 50},
     },
     "worker_config": {
-        "num_instances": 2,  # Minimum required by Dataproc
-        "machine_type_uri": "n1-standard-1",  # Reduced from n1-standard-2
-        "disk_config": {"boot_disk_size_gb": 50},  # Reduced from 100
+        "num_instances": 2,
+        "machine_type_uri": "n1-standard-2",
+        "disk_config": {"boot_disk_size_gb": 50},
     },
     "software_config": {
         "image_version": "2.1-debian11",
