@@ -363,7 +363,7 @@ LIMIT 5
 '
 ```
 
-See [airflow/README.md](airflow/README.md) and [docs/ORCHESTRATION_IMPLEMENTATION_GUIDE.md](docs/ORCHESTRATION_IMPLEMENTATION_GUIDE.md) for complete orchestration guides.
+See [airflow/README.md](airflow/README.md) for complete orchestration documentation.
 
 ## Phase 8: Power BI Analytics Dashboard
 
