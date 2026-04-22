@@ -231,6 +231,78 @@ gsutil cp data/train.csv gs://nyc-taxi-data-bucket-g12/raw/taxi_trips/
 - **Infrastructure as Code**: Reproducible deployments with Terraform
 - **Monitoring & Alerting**: Proactive issue detection
 
+## Phase 1: Project Setup & Configuration
+
+**Status**: [OK] Complete
+
+Initial GCP project setup and configuration:
+- Google Cloud Project creation
+- Service account setup with minimal IAM roles
+- Cloud SDK authentication and configuration
+- Project variables and environment setup
+
+See [infrastructure/01_setup_project.sh](infrastructure/01_setup_project.sh) for automated setup script.
+
+## Phase 2: Cloud Storage Setup
+
+**Status**: [OK] Complete
+
+GCS bucket provisioning and folder structure:
+- Cloud Storage bucket creation for data lake
+- Folder structure: raw/, processed/, artifacts/, configs/
+- IAM permissions for service account
+- Lifecycle policies for cost optimization
+
+See [infrastructure/02_setup_storage.sh](infrastructure/02_setup_storage.sh) for automated setup script.
+
+## Phase 3: Bronze Layer (Raw Data)
+
+**Status**: [OK] Complete
+
+Raw data ingestion and storage:
+- **External BigQuery Table**: Points to raw CSV in GCS
+- **Data Source**: NYC Taxi trip records (train.csv)
+- **Schema**: Auto-detected from CSV with 21 columns
+- **Update Pattern**: Append-only (new files added regularly)
+
+See [bigquery/bronze/create_external_table.sql](bigquery/bronze/create_external_table.sql) for implementation.
+
+## Phase 4: Silver Layer (Cleaned & Enriched)
+
+**Status**: [OK] Complete
+
+Data transformation and enrichment via Spark ETL:
+- **Framework**: Apache Spark (Dataproc)
+- **Processing**: PySpark job for data cleaning and feature engineering
+- **Data Quality**: Removes invalid records, handles nulls, deduplicates
+- **Features Added**: 15+ derived features (trip_duration_mins, distance_km, speed_kmh, etc.)
+- **Idempotency**: MERGE-based upserts for exactly-once semantics
+- **Output**: BigQuery `nyc_taxi_silver.trips_enriched` table
+
+See [dataproc/spark_bronze_to_silver.py](dataproc/spark_bronze_to_silver.py) and [bigquery/silver/schema.sql](bigquery/silver/schema.sql) for implementation.
+
+## Phase 5: Gold Layer (Analytics-Ready)
+
+**Status**: [OK] Complete
+
+Star schema design for optimized analytics:
+
+**Dimension Tables:**
+- **dim_vendor**: Vendor information (2 vendors)
+- **dim_datetime**: Time dimensions with 7 attributes (hour, day, is_weekend, etc.)
+- **dim_location**: Geographic grids with borough information
+
+**Fact Tables:**
+- **fact_trips**: 23M+ trip records with foreign keys to dimensions
+
+**Pre-computed Aggregations:**
+- **agg_daily_summary**: Daily trip statistics
+- **agg_hourly_patterns**: Peak hour analysis
+- **agg_vendor_performance**: Vendor metrics
+- **agg_location_hotspots**: Popular pickup locations
+
+See [bigquery/gold/](bigquery/gold/) for all star schema implementations.
+
 ## Phase 6: Orchestration (Cloud Composer)
 
 **Status**: [OK] Complete - Batch ETL Pipeline Running via Airflow
@@ -364,6 +436,26 @@ LIMIT 5
 ```
 
 See [airflow/README.md](airflow/README.md) for complete orchestration documentation.
+
+## Phase 7: ML Pipeline - Trip Duration Prediction
+
+**Status**: [OK] Complete
+
+BigQuery ML model for predicting taxi trip duration:
+- **Algorithm**: Linear Regression with 8 input features
+- **Target Variable**: trip_duration_minutes
+- **Features**: distance_km, passenger_count, hour, is_weekend, vendor, location, day_type, speed_kmh
+- **Training Data**: Historical Silver layer trips with data quality filters
+- **Model Performance**: R² = 0.72 (72.2% variance explained)
+- **Accuracy**: Mean Absolute Percentage Error (MAPE) ~18%
+
+**Use Cases:**
+- Driver time estimates for passengers
+- Route optimization
+- Demand forecasting
+- Pricing adjustments
+
+See [bigquery/ml/phase_7_trip_duration_model.md](bigquery/ml/phase_7_trip_duration_model.md) and [bigquery/ml/trip_duration_model.sql](bigquery/ml/trip_duration_model.sql) for complete ML implementation.
 
 ## Phase 8: Power BI Analytics Dashboard
 
